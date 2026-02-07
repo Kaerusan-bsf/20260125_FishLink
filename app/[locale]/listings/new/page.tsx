@@ -1,6 +1,4 @@
 import {getTranslations} from 'next-intl/server';
-import {requireUser} from '../../../../lib/auth';
-import {prisma} from '../../../../lib/prisma';
 import {redirect} from 'next/navigation';
 import PhotoUploadField from '../PhotoUploadField';
 
@@ -28,6 +26,10 @@ export default async function ListingNewPage({params}: {params: {locale: string}
 
   async function createListing(formData: FormData) {
     'use server';
+
+    const { requireUser } = await import('../../../../lib/auth');
+    const { prisma } = await import('../../../../lib/prisma');
+
     const current = await requireUser(params.locale, 'FARMER');
     const fishType = String(formData.get('fishType') ?? '').trim();
     const basePricePerKg = Number(formData.get('basePricePerKg'));
