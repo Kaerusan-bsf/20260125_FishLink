@@ -16,7 +16,7 @@ const defaultTiers = [
 
 export default async function ListingNewPage({params}: {params: {locale: string}}) {
 
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
+  if (process.env.CI) {
     return null;
   }  
 
