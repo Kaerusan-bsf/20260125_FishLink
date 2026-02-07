@@ -153,7 +153,15 @@
     "dayAfterTomorrow": "Day after tomorrow",
     "expiredTimeError": "The deadline for the selected date/time has passed. Please choose tomorrow.",
     "pickDate": "Pick a date",
-    "orPickFromCalendar": "Choose from calendar"
+    "orPickFromCalendar": "Choose from calendar",
+    "viewFarmerMap": "View farm location on map",
+    "estimateFishLabel": "Fish price (estimate)",
+    "estimateGuttingLabel": "Gutting fee (estimate)",
+    "estimateSupportLabel": "Service fee (estimate)",
+    "estimateDeliveryLabel": "Delivery fee (estimate)",
+    "estimateTotalLabel": "Total (estimate)",
+    "estimateNote": "Final price will be confirmed when the farmer accepts the order. Delivery fee may change depending on distance.",
+    "freeDeliveryHint": "Free delivery (>= {minKg}kg)"
   },
   "timeBand": {
     "morning": "Morning",

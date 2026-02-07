@@ -153,7 +153,15 @@
     "dayAfterTomorrow": "ថ្ងៃខាងមុខ",
     "expiredTimeError": "កំណត់ពេលសម្រាប់ថ្ងៃ/ពេលដែលបានជ្រើសបានផុតហើយ។ សូមជ្រើសថ្ងៃស្អែក។",
     "pickDate": "ជ្រើសកាលបរិច្ឆេទ",
-    "orPickFromCalendar": "ជ្រើសពីប្រតិទិន"
+    "orPickFromCalendar": "ជ្រើសពីប្រតិទិន",
+    "viewFarmerMap": "មើលទីតាំងកសិករនៅលើផែនទី",
+    "estimateFishLabel": "តម្លៃត្រី (ប្រហែល)",
+    "estimateGuttingLabel": "ថ្លៃកាត់សាច់ (ប្រហែល)",
+    "estimateSupportLabel": "ថ្លៃសេវាកម្ម (ប្រហែល)",
+    "estimateDeliveryLabel": "ថ្លៃដឹកជញ្ជូន (ប្រហែល)",
+    "estimateTotalLabel": "សរុប (ប្រហែល)",
+    "estimateNote": "តម្លៃចុងក្រោយនឹងត្រូវបានបញ្ជាក់ នៅពេលកសិករអនុម័តការបញ្ជាទិញ។ ថ្លៃដឹកជញ្ជូនអាចប្រែប្រួលតាមចម្ងាយ។",
+    "freeDeliveryHint": "ដឹកជញ្ជូនឥតគិតថ្លៃ (>= {minKg}kg)"
   },
   "timeBand": {
     "morning": "ព្រឹក",

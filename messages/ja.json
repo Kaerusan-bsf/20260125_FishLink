@@ -153,7 +153,15 @@
     "dayAfterTomorrow": "明後日",
     "expiredTimeError": "選んだ希望日・時間帯の締切が過ぎています。明日を選んでください。",
     "pickDate": "日付を指定",
-    "orPickFromCalendar": "カレンダーで選ぶ"
+    "orPickFromCalendar": "カレンダーで選ぶ",
+    "viewFarmerMap": "農家の場所を地図で見る",
+    "estimateFishLabel": "魚代（目安）",
+    "estimateGuttingLabel": "下処理（目安）",
+    "estimateSupportLabel": "取引サポート料（目安）",
+    "estimateDeliveryLabel": "配送費（目安）",
+    "estimateTotalLabel": "合計（目安）",
+    "estimateNote": "※最終金額は農家の承認時に確定します（配送費は距離帯により変動）",
+    "freeDeliveryHint": "送料無料（{minKg}kg以上）"
   },
   "timeBand": {
     "morning": "朝",
