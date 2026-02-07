@@ -34,6 +34,10 @@
     "entityName": "ឈ្មោះស្ថាប័ន",
     "phone": "លេខទូរស័ព្ទ",
     "mapUrl": "តំណ Google Map",
+    "province": "ខេត្ត",
+    "district": "ស្រុក",
+    "provincePlaceholder": "ឧ. តាកែវ",
+    "districtPlaceholder": "ឧ. បាទី",
     "save": "រក្សាទុក",
     "saved": "បានរក្សាទុក"
   },

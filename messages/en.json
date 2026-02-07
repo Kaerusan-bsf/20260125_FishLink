@@ -34,6 +34,10 @@
     "entityName": "Entity name",
     "phone": "Phone",
     "mapUrl": "Google Map URL",
+    "province": "Province",
+    "district": "District",
+    "provincePlaceholder": "e.g., Takeo",
+    "districtPlaceholder": "e.g., Bati",
     "save": "Save",
     "saved": "Saved"
   },

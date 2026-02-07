@@ -34,6 +34,10 @@
     "entityName": "事業者名",
     "phone": "電話番号",
     "mapUrl": "Google Map URL",
+    "province": "州",
+    "district": "地区",
+    "provincePlaceholder": "例：Takeo",
+    "districtPlaceholder": "例：Bati",
     "save": "保存",
     "saved": "保存しました"
   },
