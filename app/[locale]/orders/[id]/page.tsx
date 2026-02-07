@@ -500,72 +500,57 @@ export default async function OrderDetailPage({
           </div>
         ) : null}
 
-        {user.role === 'FARMER' && order.status === 'ACCEPTED' ? (
-          <div className="notice" style={{marginTop: 12}}>
-            <strong>農家の受取額（確定）</strong>
 
-            <div className="muted">魚代: {money(farmerFishSubtotal)}</div>
+        {user.role === 'RESTAURANT' && order.status === 'REQUESTED' ? (
+          <div className="notice" style={{marginTop: 12}}>
+            <strong>{t('orders.estimate')}</strong>
+
+            <div className="muted">
+              {t('orders.estimateFishLabel')}: {money(fishSubtotalEst)}
+            </div>
+
             {order.guttingRequested ? (
-              <div className="muted">下処理: {money(farmerGuttingFee)}</div>
+              <div className="muted">
+                {t('orders.estimateGuttingLabel')}: {money(guttingFeeEst)}
+              </div>
             ) : null}
-            <div className="muted">配送費: {money(farmerDeliveryFinal)}</div>
+
+            <div className="muted">
+              {t('orders.estimateSupportLabel')}: {money(supportFeeEst)}
+            </div>
+
+            <div className="muted">
+              {t('orders.estimateDeliveryLabel')}:&nbsp;
+              {order.deliveryRequested ? (
+                freeEligible ? (
+                  <>
+                    0.00{' '}
+                    <span className="muted">
+                      ({t('orders.freeDeliveryHint', {minKg: order.listing.freeDeliveryMinKg})})
+                    </span>
+                  </>
+                ) : showRangeEst ? (
+                  `${money(deliveryMinEst)} - ${money(deliveryMaxEst)}`
+                ) : (
+                  money(deliveryMinEst)
+                )
+              ) : (
+                '0.00'
+              )}
+            </div>
 
             <div style={{marginTop: 8}}>
-              <strong>受取合計: {money(farmerTotalFinal)}</strong>
+              <strong>
+                {t('orders.estimateTotalLabel')}:&nbsp;
+                {showRangeEst ? `${money(totalMinEst)} - ${money(totalMaxEst)}` : money(totalMinEst)}
+              </strong>
+            </div>
+
+            <div className="muted" style={{marginTop: 6}}>
+              {t('orders.estimateNote')}
             </div>
           </div>
         ) : null}
-
-      {user.role === 'RESTAURANT' && order.status === 'REQUESTED' ? (
-        <div className="notice" style={{marginTop: 12}}>
-          <strong>{t('orders.estimate')}</strong>
-
-          <div className="muted">
-            {t('orders.estimateFishLabel')}: {money(fishSubtotalEst)}
-          </div>
-
-          {order.guttingRequested ? (
-            <div className="muted">
-              {t('orders.estimateGuttingLabel')}: {money(guttingFeeEst)}
-            </div>
-          ) : null}
-
-          <div className="muted">
-            {t('orders.estimateSupportLabel')}: {money(supportFeeEst)}
-          </div>
-
-          <div className="muted">
-            {t('orders.estimateDeliveryLabel')}:&nbsp;
-            {order.deliveryRequested ? (
-              freeEligible ? (
-                <>
-                  0.00{' '}
-                  <span className="muted">
-                    ({t('orders.freeDeliveryHint', {minKg: order.listing.freeDeliveryMinKg})})
-                  </span>
-                </>
-              ) : showRangeEst ? (
-                `${money(deliveryMinEst)} - ${money(deliveryMaxEst)}`
-              ) : (
-                money(deliveryMinEst)
-              )
-            ) : (
-              '0.00'
-            )}
-          </div>
-
-          <div style={{marginTop: 8}}>
-            <strong>
-              {t('orders.estimateTotalLabel')}:&nbsp;
-              {showRangeEst ? `${money(totalMinEst)} - ${money(totalMaxEst)}` : money(totalMinEst)}
-            </strong>
-          </div>
-
-          <div className="muted" style={{marginTop: 6}}>
-            {t('orders.estimateNote')}
-          </div>
-        </div>
-      ) : null}
 
         {user.role === 'FARMER' && order.status === 'COMPLETED' ? (
           <div className="notice" style={{marginTop: 12}}>
