@@ -590,17 +590,17 @@ export default async function OrderDetailPage({
               <strong>{t('orders.farmerFinalTitle')}</strong>
 
               <div className="muted">
-                {t('orders.estimateFishLabel')}: {money(farmerFishSubtotal)}
+                {t('orders.fishPriceFinal')}: {money(farmerFishSubtotal)}
               </div>
 
               {order.guttingRequested ? (
                 <div className="muted">
-                  {t('orders.estimateGuttingLabel')}: {money(farmerGuttingFee)}
+                  {t('orders.guttingFeeFinal')}: {money(farmerGuttingFee)}
                 </div>
               ) : null}
 
               <div className="muted">
-                {t('orders.estimateDeliveryLabel')}: {money(farmerDeliveryFinal)}
+                {t('orders.deliveryFeeFinalLabel')}: {money(farmerDeliveryFinal)}
               </div>
 
               <div style={{marginTop: 8}}>

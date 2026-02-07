@@ -170,7 +170,10 @@
     "farmerFinalTitle": "農家の受取額（確定）",
     "payoutTotal": "受取合計",
     "farmerFinalNote": "※この取引で確定した受取額です",
-    "farmerPaymentNote": "※入金はFishLinkから行います（支払いタイミングは運用により異なります）"
+    "farmerPaymentNote": "※入金はFishLinkから行います（支払いタイミングは運用により異なります）",
+    "fishPriceFinal": "魚代（確定）",
+    "guttingFeeFinal": "下処理（確定）",
+    "deliveryFeeFinalLabel": "配送費（確定）"
   },
   "timeBand": {
     "morning": "朝",

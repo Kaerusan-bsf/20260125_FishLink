@@ -170,7 +170,10 @@
     "farmerFinalTitle": "Farmer payout (confirmed)",
     "payoutTotal": "Payout total",
     "farmerFinalNote": "This is the confirmed payout for this order.",
-    "farmerPaymentNote": "Payment will be made by FishLink (timing depends on operations)."
+    "farmerPaymentNote": "Payment will be made by FishLink (timing depends on operations).",
+    "fishPriceFinal": "Fish price (confirmed)",
+    "guttingFeeFinal": "Gutting fee (confirmed)",
+    "deliveryFeeFinalLabel": "Delivery fee (confirmed)"
   },
   "timeBand": {
     "morning": "Morning",

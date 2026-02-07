@@ -170,7 +170,10 @@
     "farmerFinalTitle": "ប្រាក់ដែលកសិករទទួលបាន (បានបញ្ជាក់)",
     "payoutTotal": "សរុបទទួល",
     "farmerFinalNote": "នេះជាចំនួនប្រាក់ដែលបានបញ្ជាក់សម្រាប់ប្រតិបត្តិការនេះ។",
-    "farmerPaymentNote": "ការទូទាត់នឹងធ្វើឡើងដោយ FishLink (ពេលវេលាអាស្រ័យលើប្រតិបត្តិការ)។"
+    "farmerPaymentNote": "ការទូទាត់នឹងធ្វើឡើងដោយ FishLink (ពេលវេលាអាស្រ័យលើប្រតិបត្តិការ)។",
+    "fishPriceFinal": "តម្លៃត្រី (បានបញ្ជាក់)",
+    "guttingFeeFinal": "ថ្លៃកាត់សាច់ (បានបញ្ជាក់)",
+    "deliveryFeeFinalLabel": "ថ្លៃដឹកជញ្ជូន (បានបញ្ជាក់)"
   },
   "timeBand": {
     "morning": "ព្រឹក",
