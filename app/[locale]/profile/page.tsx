@@ -72,12 +72,20 @@ export default async function ProfilePage({
 
           <label>
             {t('profile.province')}
-            <input name="province" placeholder="例：Takeo" defaultValue={profile?.province ?? ''} />
+            <input
+              name="province"
+              placeholder={t('profile.provincePlaceholder')}
+              defaultValue={profile?.province ?? ''}
+            />
           </label>
 
           <label>
             {t('profile.district')}
-            <input name="district" placeholder="例：Bati" defaultValue={profile?.district ?? ''} />
+            <input
+              name="district"
+              placeholder={t('profile.districtPlaceholder')}
+              defaultValue={profile?.district ?? ''}
+            />
           </label>
 
           <button type="submit">{t('profile.save')}</button>
