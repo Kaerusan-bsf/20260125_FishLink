@@ -26,6 +26,8 @@ export default function PhotoUploadField({
     if (!file) return;
     if (!configured) return;
 
+    event.target.value = '';
+
     setUploading(true);
     setError(null);
 
@@ -77,7 +79,7 @@ export default function PhotoUploadField({
           accept="image/*"
           onChange={handleFileChange}
           disabled={!configured || uploading}
-          className="hidden"
+          style={{ display: 'none' }}
         />
 
         {/* 代わりのボタン */}
