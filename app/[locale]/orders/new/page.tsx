@@ -124,8 +124,13 @@ export default async function OrderNewPage({
       if (!Number.isFinite(dayOffset)) {
         redirect(`/${params.locale}/orders`);
       }
-      requestedDate = computeRequestedDate(dayOffset);
+      const maybeRequestedDate = computeRequestedDate(dayOffset);
+      if (!maybeRequestedDate) {
+        redirect(`/${params.locale}/orders`);
+      }
+      requestedDate = maybeRequestedDate;
       expiresAt = computeExpiresAt(timeBand, dayOffset);
+
     }
     const now = DateTime.now().setZone(PHNOM_PENH);
     if (DateTime.fromJSDate(expiresAt).setZone(PHNOM_PENH) <= now) {
