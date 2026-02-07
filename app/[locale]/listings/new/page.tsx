@@ -15,6 +15,11 @@ const defaultTiers = [
 ];
 
 export default async function ListingNewPage({params}: {params: {locale: string}}) {
+
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return null;
+  }  
+
   const t = await getTranslations();
   
   const cloudinaryConfigured = Boolean(
