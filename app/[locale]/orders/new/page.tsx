@@ -242,7 +242,7 @@ export default async function OrderNewPage({
 {listing.farmer.profile?.googleMapUrl ? (
   <p style={{marginTop: 4}}>
     <a href={listing.farmer.profile.googleMapUrl} target="_blank" rel="noreferrer">
-      農家の場所を地図で見る
+      {t('orders.viewFarmerMap')}
     </a>
   </p>
 ) : null}
@@ -289,13 +289,14 @@ export default async function OrderNewPage({
             estimateTitle: t('orders.estimate'),
 
             // ここは「テキストラベル」だけ欲しいので直書きでもOK（β）
-            estimateFish: '魚代（参考）',
-            estimateGutting: '下処理（参考）',
-            estimateSupport: '取引サポート料（参考）',
-            estimateDelivery: '配送費（目安）',
-            estimateTotal: '合計（参考）',
-            estimateNote: '※最終金額は農家の承認時に確定します（配送費は距離帯により変動）',
-            freeDeliveryHint: '送料無料（{minKg}kg以上）'
+            estimateFish: t('orders.estimateFishLabel'),
+            estimateGutting: t('orders.estimateGuttingLabel'),
+            estimateSupport: t('orders.estimateSupportLabel'),
+            estimateDelivery: t('orders.estimateDeliveryLabel'),
+            estimateTotal: t('orders.estimateTotalLabel'),
+            estimateNote: t('orders.estimateNote'),
+            freeDeliveryHint: t('orders.freeDeliveryHint'),
+            deliveryFeeNote: t('orders.deliveryFeeNote')
           }}
           timeBandOptions={{
             morning: t('timeBand.morning'),

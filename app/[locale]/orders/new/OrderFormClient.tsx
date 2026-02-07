@@ -57,6 +57,7 @@ type Props = {
     estimateTotal: string;
     estimateNote: string;
     freeDeliveryHint: string;
+    deliveryFeeNote: string;
   };
 
   // options labels
@@ -181,7 +182,7 @@ export default function OrderFormClient(props: Props) {
       ) : null}
 
       <p className="muted" style={{marginTop: 8}}>
-        ※ 配送費は農家との距離帯により決まります（注文後、農家が距離帯を選択します）
+        {labels.deliveryFeeNote}
       </p>
       {/* ここがリアルタイム概算（内訳＋合計レンジ） */}
       <OrderEstimate
