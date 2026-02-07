@@ -509,43 +509,57 @@ export default async function OrderDetailPage({
           </div>
         ) : null}
 
-        {user.role === 'RESTAURANT' && order.status === 'REQUESTED' ? (
-          <div className="notice" style={{marginTop: 12}}>
-            <strong>概算金額（参考）</strong>
+      {user.role === 'RESTAURANT' && order.status === 'REQUESTED' ? (
+        <div className="notice" style={{marginTop: 12}}>
+          <strong>{t('orders.estimate')}</strong>
 
-            <div className="muted">魚代（参考）: {money(fishSubtotalEst)}</div>
-            {order.guttingRequested ? (
-              <div className="muted">下処理（参考）: {money(guttingFeeEst)}</div>
-            ) : null}
-            <div className="muted">取引サポート料（参考）: {money(supportFeeEst)}</div>
-
-            <div className="muted">
-              配送費（目安）:{' '}
-              {order.deliveryRequested ? (
-                freeEligible ? (
-                  <>0.00 <span className="muted">(送料無料)</span></>
-                ) : showRangeEst ? (
-                  `${money(deliveryMinEst)} - ${money(deliveryMaxEst)}`
-                ) : (
-                  money(deliveryMinEst)
-                )
-              ) : (
-                '0.00'
-              )}
-            </div>
-
-            <div style={{marginTop: 8}}>
-              <strong>
-                合計（参考）:{' '}
-                {showRangeEst ? `${money(totalMinEst)} - ${money(totalMaxEst)}` : money(totalMinEst)}
-              </strong>
-            </div>
-
-            <div className="muted" style={{marginTop: 6}}>
-              ※最終金額は農家の承認時に確定します（配送費は距離帯により変動）
-            </div>
+          <div className="muted">
+            {t('orders.estimateFishLabel')}: {money(fishSubtotalEst)}
           </div>
-        ) : null}
+
+          {order.guttingRequested ? (
+            <div className="muted">
+              {t('orders.estimateGuttingLabel')}: {money(guttingFeeEst)}
+            </div>
+          ) : null}
+
+          <div className="muted">
+            {t('orders.estimateSupportLabel')}: {money(supportFeeEst)}
+          </div>
+
+          <div className="muted">
+            {t('orders.estimateDeliveryLabel')}:&nbsp;
+            {order.deliveryRequested ? (
+              freeEligible ? (
+                <>
+                  0.00{' '}
+                  <span className="muted">
+                    ({t('orders.freeDeliveryHint', {minKg: order.listing.freeDeliveryMinKg})})
+                  </span>
+                </>
+              ) : showRangeEst ? (
+                `${money(deliveryMinEst)} - ${money(deliveryMaxEst)}`
+              ) : (
+                money(deliveryMinEst)
+              )
+            ) : (
+              '0.00'
+            )}
+          </div>
+
+          <div style={{marginTop: 8}}>
+            <strong>
+              {t('orders.estimateTotalLabel')}:&nbsp;
+              {showRangeEst ? `${money(totalMinEst)} - ${money(totalMaxEst)}` : money(totalMinEst)}
+            </strong>
+          </div>
+
+          <div className="muted" style={{marginTop: 6}}>
+            {t('orders.estimateNote')}
+          </div>
+        </div>
+      ) : null}
+
 
         {user.role === 'FARMER' && order.status === 'COMPLETED' ? (
           <div className="notice" style={{marginTop: 12}}>
