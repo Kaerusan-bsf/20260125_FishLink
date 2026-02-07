@@ -1,0 +1,200 @@
+{
+  "app": {
+    "title": "FishLink Beta",
+    "version": "v0.1"
+  },
+  "nav": {
+    "listings": "出品",
+    "orders": "注文",
+    "notifications": "通知",
+    "profile": "プロフィール",
+    "logout": "ログアウト",
+    "login": "ログイン",
+    "language": "言語"
+  },
+  "roles": {
+    "restaurant": "レストラン",
+    "farmer": "養殖業者"
+  },
+  "login": {
+    "title": "ログイン",
+    "userId": "ユーザーID",
+    "password": "パスワード",
+    "role": "役割",
+    "submit": "ログイン",
+    "error": {
+      "missing": "入力が不足しています",
+      "invalid": "IDまたはパスワードが正しくありません",
+      "role": "役割が一致しません"
+    }
+  },
+  "profile": {
+    "title": "プロフィール",
+    "name": "担当者名",
+    "entityName": "事業者名",
+    "phone": "電話番号",
+    "mapUrl": "Google Map URL",
+    "save": "保存",
+    "saved": "保存しました"
+  },
+  "listings": {
+    "title": "出品一覧",
+    "new": "出品作成",
+    "myListings": "自分の出品",
+    "fishType": "魚種",
+    "basePricePerKg": "基本単価(/kg)",
+    "guttingAvailable": "下処理可",
+    "guttingPricePerKg": "下処理料金(/kg)",
+    "deliveryAvailable": "配送可",
+    "deliveryFeeTiers": "配送料金レンジ",
+    "freeDeliveryMinKg": "送料無料最小kg",
+    "minOrderKg": "最低注文kg",
+    "isActive": "公開中",
+    "save": "更新",
+    "create": "作成",
+    "updatedAt": "更新日",
+    "order": "注文する",
+    "tierMinKm": "最小km",
+    "tierMaxKm": "最大km",
+    "tierFee": "料金",
+    "tierFormat": "{min}-{max}km: {fee}",
+    "tierLabelFee": "{label}: {fee}",
+    "view": {
+      "list": "リスト",
+      "grid": "グリッド"
+    },
+    "photoOptional": "写真（任意）",
+    "uploadPhoto": "写真を選んでアップロード",
+    "uploading": "アップロード中…",
+    "removePhoto": "写真を削除",
+    "photoNotConfigured": "アップロード設定が未完了です"
+  },
+  "orders": {
+    "title": "注文一覧",
+    "new": "注文作成",
+    "status": "ステータス",
+    "expiresAt": "期限",
+    "view": "詳細",
+    "createTitle": "注文作成",
+    "quantityKg": "数量(kg)",
+    "sizeRequestText": "サイズ希望",
+    "timeBand": "時間帯",
+    "timeDetail": "詳細時間",
+    "memo": "メモ",
+    "guttingRequested": "下処理希望",
+    "deliveryRequested": "配送希望",
+    "deliveryMap": "配送先Map",
+    "pickupMap": "受け渡しMap",
+    "estimate": "概算金額(参考)",
+    "submit": "依頼する",
+    "requested": "依頼中",
+    "expired": "期限切れ",
+    "reorder": "同条件で再注文",
+    "detailTitle": "注文 {id}",
+    "estimateFish": "魚代 = 数量 x {basePrice}",
+    "estimateGutting": "下処理 = 数量 x {guttingPrice}",
+    "estimateDelivery": "配送料レンジ: {tiers}",
+    "id": "ID",
+    "accepted": "承認済み",
+    "rejected": "却下",
+    "deliveryFeeFinal": "配送費（確定）",
+    "finalTotal": "確定金額",
+    "confirmed": "確定",
+    "rejectReason": "却下理由",
+    "rejectNote": "却下メモ",
+    "accept": "承認する",
+    "reject": "却下する",
+    "deliveryFeeSelect": "配送費の距離帯",
+    "freeDeliveryLabel": "送料無料（{minKg}kg以上）",
+    "deliveryFeeFixedZero": "配送費: 0",
+    "rejectReasonRequired": "却下理由は必須です",
+    "rejectReasons": {
+      "QUANTITY": "数量",
+      "SIZE": "サイズ",
+      "TIME": "時間帯",
+      "MIN_ORDER": "最低注文",
+      "OTHER": "その他"
+    },
+    "contactSection": "連絡・場所",
+    "restaurantMap": "レストランMap",
+    "farmerMap": "農家Map",
+    "handoffMap": "受け渡し地点Map",
+    "phoneCall": "電話する",
+    "mapOpen": "開く",
+    "notSet": "未設定",
+    "statusPreparing": "準備中",
+    "statusDelivering": "配送中",
+    "statusCompleted": "完了",
+    "actionStartPreparing": "準備を開始",
+    "actionStartDelivering": "配送を開始",
+    "actionComplete": "受け取り完了",
+    "deliveryCallNotice": "到着時は電話で連絡してください",
+    "paymentStatus": "決済状況",
+    "unpaid": "未決済",
+    "paid": "決済済",
+    "markPaid": "支払い済みにする",
+    "confirmPaid": "入金を確認",
+    "paymentNote1": "※決済はアプリ外（現金・振込・QR等）で行ってください",
+    "paymentNote2": "※βでは、決済状況は当事者の申告に基づく記録です（FishLinkは保証しません）",
+    "reviewTitle": "レビュー",
+    "reviewFromYou": "自分が書いたレビュー",
+    "reviewFromPartner": "相手からのレビュー",
+    "submitReview": "レビューを送信",
+    "reviewNote": "※レビューは当事者の感想です。FishLinkは内容の保証・調整を行いません",
+    "reviewRating": "評価",
+    "reviewComment": "コメント",
+    "requestedDateLabel": "希望日",
+    "today": "今日",
+    "tomorrow": "明日",
+    "dayAfterTomorrow": "明後日",
+    "expiredTimeError": "選んだ希望日・時間帯の締切が過ぎています。明日を選んでください。",
+    "pickDate": "日付を指定",
+    "orPickFromCalendar": "カレンダーで選ぶ"
+  },
+  "timeBand": {
+    "morning": "朝",
+    "afternoon": "昼",
+    "night": "夜"
+  },
+  "notifications": {
+    "title": "通知",
+    "empty": "通知はありません",
+    "orderRequested": {
+      "title": "新しい注文が届きました",
+      "body": "注文 {orderId} を確認してください。"
+    },
+    "orderExpired": {
+      "title": "注文の期限が切れました",
+      "body": "注文 {orderId} は期限切れです。再注文してください。"
+    },
+    "orderExpiredFarmer": {
+      "title": "注文が期限切れになりました",
+      "body": "注文 {orderId} が期限切れです。"
+    },
+    "orderAccepted": {
+      "title": "注文が承認されました",
+      "body": "注文 {orderId} が承認されました。"
+    },
+    "orderRejected": {
+      "title": "注文が却下されました",
+      "body": "注文 {orderId} が却下されました。（理由: {reason}）"
+    },
+    "orderPreparing": {
+      "title": "準備が開始されました",
+      "body": "注文 {orderId} の準備を開始しました。"
+    },
+    "orderDelivering": {
+      "title": "配送を開始しました",
+      "body": "注文 {orderId} を配送中です。到着時は電話で連絡します。"
+    },
+    "orderCompleted": {
+      "title": "受け取り完了",
+      "body": "注文 {orderId} の受け取りが完了しました。"
+    }
+  },
+  "common": {
+    "yes": "はい",
+    "no": "いいえ",
+    "notFound": "見つかりません"
+  }
+}
