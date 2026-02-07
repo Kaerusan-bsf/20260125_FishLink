@@ -173,7 +173,14 @@
     "farmerPaymentNote": "Payment will be made by FishLink (timing depends on operations).",
     "fishPriceFinal": "Fish price (confirmed)",
     "guttingFeeFinal": "Gutting fee (confirmed)",
-    "deliveryFeeFinalLabel": "Delivery fee (confirmed)"
+    "deliveryFeeFinalLabel": "Delivery fee (confirmed)",
+    "paymentAmountFinal": "Amount due (confirmed)",
+    "viewBreakdown": "View breakdown",
+    "fishSubtotalFinal": "Fish subtotal (confirmed)",
+    "guttingFinal": "Gutting (confirmed)",
+    "supportFeeFinal": "Service fee (confirmed)",
+    "supportFeeDiscount": "Service fee discount",
+    "totalFinalLabel": "Total (confirmed)"
   },
   "timeBand": {
     "morning": "Morning",

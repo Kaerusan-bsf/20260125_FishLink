@@ -779,31 +779,31 @@ export default async function OrderDetailPage({
               </p>
 
               <p style={{marginTop: 8}}>
-                <strong>支払金額（確定）: {money(order.finalTotal ?? 0)}</strong>
+                <strong>{t('orders.paymentAmountFinal')}: {money(order.finalTotal ?? 0)}</strong>
               </p>
 
               <details style={{marginTop: 8}}>
-                <summary style={{cursor: 'pointer'}}>内訳を見る</summary>
+                <summary style={{cursor: 'pointer'}}>{t('orders.viewBreakdown')}</summary>
 
                 <div className="muted" style={{marginTop: 8, display: 'grid', gap: 4}}>
-                  <div>魚代小計（確定）: {money(order.fishSubtotalSnap ?? 0)}</div>
+                  <div>{t('orders.fishSubtotalFinal')}: {money(order.fishSubtotalSnap ?? 0)}</div>
 
                   {order.guttingRequested ? (
-                    <div>下処理（確定）: {money(order.quantityKg * order.guttingPricePerKgSnap)}</div>
+                    <div>{t('orders.guttingFinal')}: {money(order.quantityKg * order.guttingPricePerKgSnap)}</div>
                   ) : null}
 
                   <div>
-                    取引サポート料（確定）: {money((order.betaFeeSnap ?? 0) - (order.betaDiscountSnap ?? 0))}
+                    {t('orders.supportFeeFinal')}: {money((order.betaFeeSnap ?? 0) - (order.betaDiscountSnap ?? 0))}
                   </div>
 
                   {order.betaDiscountSnap && order.betaDiscountSnap > 0 ? (
-                    <div>サポート料割引: -{money(order.betaDiscountSnap)}</div>
+                    <div>{t('orders.supportFeeDiscount')}: -{money(order.betaDiscountSnap)}</div>
                   ) : null}
 
-                  <div>配送費（確定）: {money(order.deliveryFeeFinal ?? 0)}</div>
+                  <div>{t('orders.deliveryFeeFinalLabel')}: {money(order.deliveryFeeFinal ?? 0)}</div>
 
                   <div style={{marginTop: 4}}>
-                    <strong>合計（確定）: {money(order.finalTotal ?? 0)}</strong>
+                    <strong>{t('orders.totalFinalLabel')}: {money(order.finalTotal ?? 0)}</strong>
                   </div>
                 </div>
               </details>

@@ -173,7 +173,21 @@
     "farmerPaymentNote": "※入金はFishLinkから行います（支払いタイミングは運用により異なります）",
     "fishPriceFinal": "魚代（確定）",
     "guttingFeeFinal": "下処理（確定）",
-    "deliveryFeeFinalLabel": "配送費（確定）"
+    "deliveryFeeFinalLabel": "配送費（確定）",
+    "paymentAmountFinal": "支払金額（確定）",
+    "viewBreakdown": "内訳を見る",
+    "fishSubtotalFinal": "魚代小計（確定）",
+    "guttingFinal": "下処理（確定）",
+    "supportFeeFinal": "取引サポート料（確定）",
+    "supportFeeDiscount": "サポート料割引",
+    "totalFinalLabel": "合計（確定）",
+    "paymentAmountFinal": "ចំនួនត្រូវបង់ (បានបញ្ជាក់)",
+    "viewBreakdown": "មើលព័ត៌មានលម្អិត",
+    "fishSubtotalFinal": "តម្លៃត្រីសរុប (បានបញ្ជាក់)",
+    "guttingFinal": "ថ្លៃកាត់សាច់ (បានបញ្ជាក់)",
+    "supportFeeFinal": "ថ្លៃសេវាកម្ម (បានបញ្ជាក់)",
+    "supportFeeDiscount": "បញ្ចុះតម្លៃថ្លៃសេវាកម្ម",
+    "totalFinalLabel": "សរុប (បានបញ្ជាក់)"
   },
   "timeBand": {
     "morning": "朝",
