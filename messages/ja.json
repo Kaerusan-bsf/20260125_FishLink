@@ -161,7 +161,8 @@
     "estimateDeliveryLabel": "配送費（目安）",
     "estimateTotalLabel": "合計（目安）",
     "estimateNote": "※最終金額は農家の承認時に確定します（配送費は距離帯により変動）",
-    "freeDeliveryHint": "送料無料（{minKg}kg以上）"
+    "freeDeliveryHint": "送料無料（{minKg}kg以上）",
+    "deliveryFeeNote": "※ 配送費は農家との距離帯により決まります（注文後、農家が距離帯を選択します）"
   },
   "timeBand": {
     "morning": "朝",
