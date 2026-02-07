@@ -59,10 +59,10 @@ export default async function OrdersPage({params}: {params: {locale: string}}) {
                 <th>{t('orders.id')}</th>
                 <th>{t('listings.fishType')}</th>
                 <th>{t('orders.status')}</th>
-                <th>希望日</th>
-                <th>相手</th>
-                <th>{user.role === 'RESTAURANT' ? '支払額' : '受取額'}</th>
-                <th>決済</th>
+                <th>{t('orders.requestedDateLabel')}</th>
+                <th>{t('orders.partner')}</th>
+                <th>{user.role === 'RESTAURANT' ? t('orders.finalTotal') : t('orders.farmerPayout')}</th>
+                <th>{t('orders.paymentStatus')}</th>
                 <th></th>
               </tr>
             </thead>

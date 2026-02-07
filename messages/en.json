@@ -162,7 +162,9 @@
     "estimateTotalLabel": "Total (estimate)",
     "estimateNote": "Final price will be confirmed when the farmer accepts the order. Delivery fee may change depending on distance.",
     "freeDeliveryHint": "Free delivery (>= {minKg}kg)",
-    "deliveryFeeNote": "Delivery fee depends on the distance range to the farm. After placing the order, the farmer will select the range."
+    "deliveryFeeNote": "Delivery fee depends on the distance range to the farm. After placing the order, the farmer will select the range.",
+    "partner": "Partner",
+    "farmerPayout": "Payout"
   },
   "timeBand": {
     "morning": "Morning",
