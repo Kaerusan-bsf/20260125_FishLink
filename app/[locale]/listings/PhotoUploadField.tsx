@@ -67,34 +67,64 @@ export default function PhotoUploadField({
 
   return (
     <div className="card">
-      <label>
-        {labels.photoOptional}
+      <div style={{display: 'grid', gap: 8}}>
+        <strong>{labels.photoOptional}</strong>
+
+        {/* ブラウザ既定UIを隠す */}
         <input
+          id="photoFile"
           type="file"
           accept="image/*"
           onChange={handleFileChange}
           disabled={!configured || uploading}
+          className="sr-only" // 効かなければ "hidden" にしてOK
         />
-      </label>
-      <p className="muted">{labels.uploadPhoto}</p>
-      {uploading ? <p className="muted">{labels.uploading}</p> : null}
-      {error ? <p className="notice" style={{background: '#fee2e2', color: '#991b1b'}}>{error}</p> : null}
-      {!configured ? <p className="muted">{labels.photoNotConfigured}</p> : null}
 
-      {photoUrl ? (
-        <div style={{display: 'grid', gap: 8}}>
-          <img
-            src={photoUrl}
-            alt="uploaded"
-            style={{width: '100%', height: 160, objectFit: 'cover', borderRadius: 12, border: '1px solid var(--border)'}}
-          />
-          <button type="button" className="secondary" onClick={() => setPhotoUrl('')}>
-            {labels.removePhoto}
-          </button>
-        </div>
-      ) : null}
+        {/* 代わりのボタン */}
+        <label
+          htmlFor="photoFile"
+          className="secondary"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 'fit-content',
+            cursor: !configured || uploading ? 'not-allowed' : 'pointer',
+            opacity: !configured || uploading ? 0.6 : 1
+          }}
+        >
+          {labels.uploadPhoto}
+        </label>
 
-      <input type="hidden" name="photoUrl" value={photoUrl} />
+        {uploading ? <p className="muted">{labels.uploading}</p> : null}
+        {error ? (
+          <p className="notice" style={{background: '#fee2e2', color: '#991b1b'}}>
+            {error}
+          </p>
+        ) : null}
+        {!configured ? <p className="muted">{labels.photoNotConfigured}</p> : null}
+
+        {photoUrl ? (
+          <div style={{display: 'grid', gap: 8}}>
+            <img
+              src={photoUrl}
+              alt="uploaded"
+              style={{
+                width: '100%',
+                height: 160,
+                objectFit: 'cover',
+                borderRadius: 12,
+                border: '1px solid var(--border)'
+              }}
+            />
+            <button type="button" className="secondary" onClick={() => setPhotoUrl('')}>
+              {labels.removePhoto}
+            </button>
+          </div>
+        ) : null}
+
+        <input type="hidden" name="photoUrl" value={photoUrl} />
+      </div>
     </div>
   );
 }
