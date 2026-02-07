@@ -600,39 +600,31 @@ export default async function OrderDetailPage({
           </div>
         ) : null}
 
-        {user.role === 'RESTAURANT' && order.status === 'ACCEPTED' ? (
-          <div className="notice" style={{marginTop: 12}}>
-            <strong>{t('orders.confirmed')}</strong>
+          {user.role === 'FARMER' && order.status === 'ACCEPTED' ? (
+            <div className="notice" style={{marginTop: 12}}>
+              <strong>{t('orders.farmerFinalTitle')}</strong>
 
-            <div className="muted">
-              魚代小計（確定）: {money(order.fishSubtotalSnap ?? 0)}
-            </div>
-
-            {order.guttingRequested ? (
               <div className="muted">
-                下処理（確定）: {money(order.quantityKg * order.guttingPricePerKgSnap)}
+                {t('orders.estimateFishLabel')}: {money(farmerFishSubtotal)}
               </div>
-            ) : null}
 
-            <div className="muted">
-              取引サポート料（確定）: {money(order.betaFeeSnap ?? 0)}
-            </div>
+              {order.guttingRequested ? (
+                <div className="muted">
+                  {t('orders.estimateGuttingLabel')}: {money(farmerGuttingFee)}
+                </div>
+              ) : null}
 
-            {order.betaDiscountSnap && order.betaDiscountSnap > 0 ? (
               <div className="muted">
-                サポート料割引: -{money(order.betaDiscountSnap)}
+                {t('orders.estimateDeliveryLabel')}: {money(farmerDeliveryFinal)}
               </div>
-            ) : null}
 
-            <div className="muted">
-              {t('orders.deliveryFeeFinal')}: {money(order.deliveryFeeFinal ?? 0)}
+              <div style={{marginTop: 8}}>
+                <strong>
+                  {t('orders.payoutTotal')}: {money(farmerTotalFinal)}
+                </strong>
+              </div>
             </div>
-
-            <div style={{marginTop: 8}}>
-              <strong>{t('orders.finalTotal')}: {money(order.finalTotal ?? 0)}</strong>
-            </div>
-          </div>
-        ) : null}
+          ) : null}
 
         {order.status === 'REJECTED' ? (
           <div className="notice" style={{marginTop: 12, background: '#fee2e2', color: '#991b1b'}}>
