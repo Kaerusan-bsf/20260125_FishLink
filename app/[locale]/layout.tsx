@@ -5,6 +5,8 @@ import {locales} from '../../i18n';
 import {getMessages, getTranslations} from 'next-intl/server';
 import Link from 'next/link';
 import {getCurrentUser, logoutAction} from '../../lib/auth';
+import LocaleSwitcher from './LocaleSwitcher';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -48,11 +50,7 @@ export default async function LocaleLayout({
             ) : (
               <Link href={`/${locale}/login`}>{t('nav.login')}</Link>
             )}
-            <div className="nav-links">
-              <Link href={`/ja`}>JA</Link>
-              <Link href={`/en`}>EN</Link>
-              <Link href={`/km`}>KM</Link>
-            </div>
+            <LocaleSwitcher />
           </nav>
         </div>
       </header>
