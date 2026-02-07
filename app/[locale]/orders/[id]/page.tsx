@@ -567,28 +567,35 @@ export default async function OrderDetailPage({
         </div>
       ) : null}
 
-
         {user.role === 'FARMER' && order.status === 'COMPLETED' ? (
           <div className="notice" style={{marginTop: 12}}>
-            <strong>農家の受取額（確定）</strong>
+            <strong>{t('orders.farmerFinalTitle')}</strong>
 
-            <div className="muted">魚代: {money(farmerFishSubtotal)}</div>
+            <div className="muted">
+              {t('orders.estimateFishLabel')}: {money(farmerFishSubtotal)}
+            </div>
 
             {order.guttingRequested ? (
-              <div className="muted">下処理: {money(farmerGuttingFee)}</div>
+              <div className="muted">
+                {t('orders.estimateGuttingLabel')}: {money(farmerGuttingFee)}
+              </div>
             ) : null}
 
-            <div className="muted">配送費: {money(farmerDeliveryFinal)}</div>
+            <div className="muted">
+              {t('orders.estimateDeliveryLabel')}: {money(farmerDeliveryFinal)}
+            </div>
 
             <div style={{marginTop: 8}}>
-              <strong>受取合計: {money(farmerTotalFinal)}</strong>
+              <strong>
+                {t('orders.payoutTotal')}: {money(farmerTotalFinal)}
+              </strong>
             </div>
 
             <div className="muted" style={{marginTop: 6}}>
-              ※この取引で確定した受取額です
+              {t('orders.farmerFinalNote')}
             </div>
             <div className="muted" style={{marginTop: 6}}>
-              ※入金はFishLinkから行います（支払いタイミングは運用により異なります）
+              {t('orders.farmerPaymentNote')}
             </div>
           </div>
         ) : null}

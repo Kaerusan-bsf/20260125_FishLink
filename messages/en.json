@@ -166,7 +166,11 @@
     "partner": "Partner",
     "farmerPayout": "Payout",
     "farmerEstimateTitle": "Estimated farmer payout",
-    "farmerEstimateNote": "Delivery fee will be finalized after selecting the distance range."
+    "farmerEstimateNote": "Delivery fee will be finalized after selecting the distance range.",
+    "farmerFinalTitle": "Farmer payout (confirmed)",
+    "payoutTotal": "Payout total",
+    "farmerFinalNote": "This is the confirmed payout for this order.",
+    "farmerPaymentNote": "Payment will be made by FishLink (timing depends on operations)."
   },
   "timeBand": {
     "morning": "Morning",

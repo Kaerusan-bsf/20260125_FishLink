@@ -166,8 +166,11 @@
     "partner": "相手",
     "farmerPayout": "受取額",
     "farmerEstimateTitle": "農家の受取額（参考）",
-    "farmerEstimateNote": "※配送費は距離帯選択後に確定します"
-
+    "farmerEstimateNote": "※配送費は距離帯選択後に確定します",
+    "farmerFinalTitle": "農家の受取額（確定）",
+    "payoutTotal": "受取合計",
+    "farmerFinalNote": "※この取引で確定した受取額です",
+    "farmerPaymentNote": "※入金はFishLinkから行います（支払いタイミングは運用により異なります）"
   },
   "timeBand": {
     "morning": "朝",
