@@ -456,18 +456,25 @@ export default async function OrderDetailPage({
         
         {user.role === 'FARMER' && order.status === 'REQUESTED' ? (
           <div className="notice" style={{marginTop: 12}}>
-            <strong>農家の受取額（参考）</strong>
+            <strong>{t('orders.farmerEstimateTitle')}</strong>
 
-            <div className="muted">魚代: {money(farmerFishSubtotal)}</div>
+            <div className="muted">
+              {t('orders.estimateFishLabel')}: {money(farmerFishSubtotal)}
+            </div>
+
             {order.guttingRequested ? (
-              <div className="muted">下処理: {money(farmerGuttingFee)}</div>
+              <div className="muted">
+                {t('orders.estimateGuttingLabel')}: {money(farmerGuttingFee)}
+              </div>
             ) : null}
 
             <div className="muted">
-              配送費:{' '}
+              {t('orders.estimateDeliveryLabel')}:&nbsp;
               {order.deliveryRequested ? (
                 farmerFreeEligible ? (
-                  <>0.00 <span className="muted">(送料無料)</span></>
+                  <>
+                    0.00 <span className="muted">({t('orders.freeDeliveryHint', {minKg: order.listing.freeDeliveryMinKg})})</span>
+                  </>
                 ) : farmerShowRangeEst ? (
                   `${money(farmerDeliveryMinEst)} - ${money(farmerDeliveryMaxEst)}`
                 ) : (
@@ -480,7 +487,7 @@ export default async function OrderDetailPage({
 
             <div style={{marginTop: 8}}>
               <strong>
-                合計（参考）:{' '}
+                {t('orders.estimateTotalLabel')}:&nbsp;
                 {farmerShowRangeEst
                   ? `${money(farmerTotalMinEst)} - ${money(farmerTotalMaxEst)}`
                   : money(farmerTotalMinEst)}
@@ -488,7 +495,7 @@ export default async function OrderDetailPage({
             </div>
 
             <div className="muted" style={{marginTop: 6}}>
-              ※配送費は距離帯選択後に確定します
+              {t('orders.farmerEstimateNote')}
             </div>
           </div>
         ) : null}
