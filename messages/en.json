@@ -9,7 +9,7 @@
     "notifications": "Notifications",
     "profile": "Profile",
     "logout": "Logout",
-    "login": "Login",
+    "login": "Log in",
     "language": "Language"
   },
   "roles": {
@@ -17,15 +17,15 @@
     "farmer": "Farmer"
   },
   "login": {
-    "title": "Login",
+    "title": "Log in",
     "userId": "User ID",
     "password": "Password",
     "role": "Role",
-    "submit": "Login",
+    "submit": "Log in",
     "error": {
-      "missing": "Missing fields",
+      "missing": "Please fill in all fields",
       "invalid": "Invalid ID or password",
-      "role": "Role mismatch"
+      "role": "Role doesn't match"
     }
   },
   "profile": {
