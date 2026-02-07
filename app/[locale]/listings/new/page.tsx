@@ -6,6 +6,7 @@ import PhotoUploadField from '../PhotoUploadField';
 
 export const dynamic = 'force-dynamic';
 
+
 const defaultTiers = [
   {minKm: 0, maxKm: 5, fee: 1},
   {minKm: 5, maxKm: 10, fee: 2},
@@ -15,7 +16,7 @@ const defaultTiers = [
 
 export default async function ListingNewPage({params}: {params: {locale: string}}) {
   const t = await getTranslations();
-  await requireUser(params.locale, 'FARMER');
+  
   const cloudinaryConfigured = Boolean(
     process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET
   );
