@@ -77,7 +77,7 @@ export default function PhotoUploadField({
           accept="image/*"
           onChange={handleFileChange}
           disabled={!configured || uploading}
-          className="sr-only" // 効かなければ "hidden" にしてOK
+          className="hidden"
         />
 
         {/* 代わりのボタン */}
