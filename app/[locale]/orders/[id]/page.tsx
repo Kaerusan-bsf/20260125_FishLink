@@ -552,38 +552,38 @@ export default async function OrderDetailPage({
           </div>
         ) : null}
 
-        {user.role === 'FARMER' && order.status === 'COMPLETED' ? (
-          <div className="notice" style={{marginTop: 12}}>
-            <strong>{t('orders.farmerFinalTitle')}</strong>
+          {user.role === 'FARMER' && order.status === 'COMPLETED' ? (
+            <div className="notice" style={{marginTop: 12}}>
+              <strong>{t('orders.farmerFinalTitle')}</strong>
 
-            <div className="muted">
-              {t('orders.estimateFishLabel')}: {money(farmerFishSubtotal)}
-            </div>
-
-            {order.guttingRequested ? (
               <div className="muted">
-                {t('orders.estimateGuttingLabel')}: {money(farmerGuttingFee)}
+                {t('orders.fishPriceFinal')}: {money(farmerFishSubtotal)}
               </div>
-            ) : null}
 
-            <div className="muted">
-              {t('orders.estimateDeliveryLabel')}: {money(farmerDeliveryFinal)}
-            </div>
+              {order.guttingRequested ? (
+                <div className="muted">
+                  {t('orders.guttingFeeFinal')}: {money(farmerGuttingFee)}
+                </div>
+              ) : null}
 
-            <div style={{marginTop: 8}}>
-              <strong>
-                {t('orders.payoutTotal')}: {money(farmerTotalFinal)}
-              </strong>
-            </div>
+              <div className="muted">
+                {t('orders.deliveryFeeFinalLabel')}: {money(farmerDeliveryFinal)}
+              </div>
 
-            <div className="muted" style={{marginTop: 6}}>
-              {t('orders.farmerFinalNote')}
+              <div style={{marginTop: 8}}>
+                <strong>
+                  {t('orders.payoutTotal')}: {money(farmerTotalFinal)}
+                </strong>
+              </div>
+
+              <div className="muted" style={{marginTop: 6}}>
+                {t('orders.farmerFinalNote')}
+              </div>
+              <div className="muted" style={{marginTop: 6}}>
+                {t('orders.farmerPaymentNote')}
+              </div>
             </div>
-            <div className="muted" style={{marginTop: 6}}>
-              {t('orders.farmerPaymentNote')}
-            </div>
-          </div>
-        ) : null}
+          ) : null}
 
           {user.role === 'FARMER' && order.status === 'ACCEPTED' ? (
             <div className="notice" style={{marginTop: 12}}>
