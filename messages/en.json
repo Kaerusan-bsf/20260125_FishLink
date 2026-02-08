@@ -181,7 +181,8 @@
     "supportFeeFinal": "Service fee (confirmed)",
     "supportFeeDiscount": "Service fee discount",
     "totalFinalLabel": "Total (confirmed)",
-    "reviewWaiting": "This will be shown after you submit your review."
+    "reviewWaiting": "This will be shown after you submit your review.",
+    "partnerReviewWaiting": "Waiting for the partner's review."
   },
   "timeBand": {
     "morning": "Morning",

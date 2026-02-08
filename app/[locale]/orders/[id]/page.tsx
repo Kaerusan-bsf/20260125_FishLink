@@ -878,7 +878,7 @@ export default async function OrderDetailPage({
                     {partnerReview.rating ? `★${partnerReview.rating}` : '-'} {partnerReview.comment || ''}
                   </div>
                 ) : (
-                  <div className="muted">相手のレビューを待っています</div>
+                  <div className="muted">{t('orders.partnerReviewWaiting')}</div>
                 )
               ) : (
                 <div className="muted">{t('orders.reviewWaiting')}</div>
