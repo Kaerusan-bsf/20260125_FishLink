@@ -173,7 +173,14 @@
     "farmerPaymentNote": "ការទូទាត់នឹងធ្វើឡើងដោយ FishLink (ពេលវេលាអាស្រ័យលើប្រតិបត្តិការ)។",
     "fishPriceFinal": "តម្លៃត្រី (បានបញ្ជាក់)",
     "guttingFeeFinal": "ថ្លៃកាត់សាច់ (បានបញ្ជាក់)",
-    "deliveryFeeFinalLabel": "ថ្លៃដឹកជញ្ជូន (បានបញ្ជាក់)"
+    "deliveryFeeFinalLabel": "ថ្លៃដឹកជញ្ជូន (បានបញ្ជាក់)",
+    "paymentAmountFinal": "ចំនួនត្រូវបង់ (បានបញ្ជាក់)",
+    "viewBreakdown": "មើលព័ត៌មានលម្អិត",
+    "fishSubtotalFinal": "តម្លៃត្រីសរុប (បានបញ្ជាក់)",
+    "guttingFinal": "ថ្លៃកាត់សាច់ (បានបញ្ជាក់)",
+    "supportFeeFinal": "ថ្លៃសេវាកម្ម (បានបញ្ជាក់)",
+    "supportFeeDiscount": "បញ្ចុះតម្លៃថ្លៃសេវាកម្ម",
+    "totalFinalLabel": "សរុប (បានបញ្ជាក់)"
   },
   "timeBand": {
     "morning": "ព្រឹក",

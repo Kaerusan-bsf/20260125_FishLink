@@ -180,14 +180,7 @@
     "guttingFinal": "下処理（確定）",
     "supportFeeFinal": "取引サポート料（確定）",
     "supportFeeDiscount": "サポート料割引",
-    "totalFinalLabel": "合計（確定）",
-    "paymentAmountFinal": "ចំនួនត្រូវបង់ (បានបញ្ជាក់)",
-    "viewBreakdown": "មើលព័ត៌មានលម្អិត",
-    "fishSubtotalFinal": "តម្លៃត្រីសរុប (បានបញ្ជាក់)",
-    "guttingFinal": "ថ្លៃកាត់សាច់ (បានបញ្ជាក់)",
-    "supportFeeFinal": "ថ្លៃសេវាកម្ម (បានបញ្ជាក់)",
-    "supportFeeDiscount": "បញ្ចុះតម្លៃថ្លៃសេវាកម្ម",
-    "totalFinalLabel": "សរុប (បានបញ្ជាក់)"
+    "totalFinalLabel": "合計（確定）"
   },
   "timeBand": {
     "morning": "朝",
