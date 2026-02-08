@@ -180,7 +180,8 @@
     "guttingFinal": "下処理（確定）",
     "supportFeeFinal": "取引サポート料（確定）",
     "supportFeeDiscount": "サポート料割引",
-    "totalFinalLabel": "合計（確定）"
+    "totalFinalLabel": "合計（確定）",
+    "reviewWaiting": "あなたのレビュー投稿後に表示されます"
   },
   "timeBand": {
     "morning": "朝",

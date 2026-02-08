@@ -180,7 +180,8 @@
     "guttingFinal": "Gutting (confirmed)",
     "supportFeeFinal": "Service fee (confirmed)",
     "supportFeeDiscount": "Service fee discount",
-    "totalFinalLabel": "Total (confirmed)"
+    "totalFinalLabel": "Total (confirmed)",
+    "reviewWaiting": "This will be shown after you submit your review."
   },
   "timeBand": {
     "morning": "Morning",

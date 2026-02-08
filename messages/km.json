@@ -180,7 +180,8 @@
     "guttingFinal": "ថ្លៃកាត់សាច់ (បានបញ្ជាក់)",
     "supportFeeFinal": "ថ្លៃសេវាកម្ម (បានបញ្ជាក់)",
     "supportFeeDiscount": "បញ្ចុះតម្លៃថ្លៃសេវាកម្ម",
-    "totalFinalLabel": "សរុប (បានបញ្ជាក់)"
+    "totalFinalLabel": "សរុប (បានបញ្ជាក់)",
+    "reviewWaiting": "វានឹងត្រូវបង្ហាញ បន្ទាប់ពីអ្នកផ្ញើការវាយតម្លៃរបស់អ្នក។"
   },
   "timeBand": {
     "morning": "ព្រឹក",

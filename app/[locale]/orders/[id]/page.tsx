@@ -881,7 +881,7 @@ export default async function OrderDetailPage({
                   <div className="muted">相手のレビューを待っています</div>
                 )
               ) : (
-                <div className="muted">あなたのレビュー投稿後に表示されます</div>
+                <div className="muted">{t('orders.reviewWaiting')}</div>
               )}
             </div>
           </div>
