@@ -4,6 +4,7 @@ import {prisma} from '../../../lib/prisma';
 import {redirect} from 'next/navigation';
 import Link from 'next/link';
 import RestaurantListingsView from './RestaurantListingsView';
+import {formatMoneyKHR} from '../../../lib/formatMoneyKHR';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,12 +15,12 @@ function formatTiers(t: (key: string, params?: any) => string, tiers: any) {
     .slice()
     .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
     .map((tier) => {
-      // 表示： "0-5km: $1" みたいに出す（翻訳キーがあればそれを使う）
+      // 表示： "0-5km: 1,000 KHR" のように出す（翻訳キーがあればそれを使う）
       // 既存の tierFormat が min/max 前提なら、いったん label/fee で組み立てる
       try {
-        return t('listings.tierLabelFee', {label: tier.label, fee: tier.fee});
+        return t('listings.tierLabelFee', {label: tier.label, fee: formatMoneyKHR(Number(tier.fee))});
       } catch {
-        return `${tier.label}: ${tier.fee}`;
+        return `${tier.label}: ${formatMoneyKHR(Number(tier.fee))}`;
       }
     })
     .join(', ');
@@ -64,7 +65,7 @@ export default async function ListingsPage({params}: {params: {locale: string}})
             <div className="card" key={listing.id}>
               <h3>{listing.fishType}</h3>
               <p className="muted">
-                {t('listings.basePricePerKg')}: {listing.basePricePerKg}
+                {t('listings.basePricePerKg')}: {formatMoneyKHR(listing.basePricePerKg)} / kg
               </p>
               <p className="muted">
                 {t('listings.deliveryFeeTiers')}: {formatTiers(t, listing.deliveryFeeTiers)}

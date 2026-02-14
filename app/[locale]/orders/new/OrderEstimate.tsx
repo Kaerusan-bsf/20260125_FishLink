@@ -1,6 +1,7 @@
 'use client';
 
 import {useMemo} from 'react';
+import {formatMoneyKHR} from '../../../../lib/formatMoneyKHR';
 
 type Props = {
   quantityKg: number;
@@ -25,7 +26,7 @@ type Props = {
 };
 
 function money(n: number) {
-  return (Number.isFinite(n) ? n : 0).toFixed(2);
+  return formatMoneyKHR(Number.isFinite(n) ? n : 0);
 }
 
 export default function OrderEstimate(props: Props) {
@@ -107,7 +108,7 @@ export default function OrderEstimate(props: Props) {
         {deliveryRequested ? (
           freeDeliveryMinKg != null && quantityKg >= freeDeliveryMinKg ? (
             <>
-              0.00{' '}
+              {money(0)}{' '}
               <span className="muted">
                 ({labels.freeDeliveryHint.replace('{minKg}', String(freeDeliveryMinKg))})
               </span>
@@ -118,7 +119,7 @@ export default function OrderEstimate(props: Props) {
             money(calc.dMin)
           )
         ) : (
-          '0.00'
+          money(0)
         )}
       </div>
 

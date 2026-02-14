@@ -11,6 +11,7 @@ import {
 import {createNotification} from '../../../../lib/notifications';
 import {DateTime} from 'luxon';
 import OrderFormClient from './OrderFormClient';
+import {formatMoneyKHR} from '../../../../lib/formatMoneyKHR';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +24,9 @@ function formatTiers(t: (key: string, params?: any) => string, tiers: any) {
     .map((tier) => {
       // messages に tierLabelFee が無い場合でも落ちないように
       try {
-        return t('listings.tierLabelFee', {label: tier.label, fee: tier.fee});
+        return t('listings.tierLabelFee', {label: tier.label, fee: formatMoneyKHR(Number(tier.fee))});
       } catch {
-        return `${tier.label}: ${tier.fee}`;
+        return `${tier.label}: ${formatMoneyKHR(Number(tier.fee))}`;
       }
     })
     .join(', ');

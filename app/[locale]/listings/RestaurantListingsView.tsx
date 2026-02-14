@@ -2,6 +2,7 @@
 
 import {useEffect, useMemo, useState} from 'react';
 import Link from 'next/link';
+import {formatMoneyKHR} from '../../../lib/formatMoneyKHR';
 
 const STORAGE_KEY = 'fl_listings_view';
 
@@ -46,6 +47,8 @@ export default function RestaurantListingsView({
   listings: ListingViewItem[];
   labels: Labels;
 }) {
+  const pricePerKgLabel = (price: number) => `${formatMoneyKHR(price)} / kg`;
+
   const [view, setView] = useState<'list' | 'grid'>('list');
 
   useEffect(() => {
@@ -115,7 +118,7 @@ export default function RestaurantListingsView({
                   ) : null}
                 </td>
                 <td>{listing.fishType}</td>
-                <td>{(listing.displayPricePerKg ?? listing.basePricePerKg).toFixed(2)}</td>
+                <td>{pricePerKgLabel(listing.displayPricePerKg ?? listing.basePricePerKg)}</td>
                 <td>{listing.deliveryAvailable ? labels.yes : labels.no}</td>
                 <td>{listing.deliveryFeeTiersLabel}</td>
                 <td>{listing.freeDeliveryMinKg ?? '-'}</td>
@@ -174,7 +177,9 @@ export default function RestaurantListingsView({
             <div style={{display: 'flex', flexDirection: 'column', gap: 6}}>
               <div style={{display: 'flex', alignItems: 'baseline', gap: 8}}>
                 <span style={{fontSize: 20, fontWeight: 700}}>{listing.fishType}</span>
-                <span style={{fontSize: 16, fontWeight: 700}}>${(listing.displayPricePerKg ?? listing.basePricePerKg).toFixed(2)}/kg</span>
+                <span style={{fontSize: 16, fontWeight: 700}}>
+                  {pricePerKgLabel(listing.displayPricePerKg ?? listing.basePricePerKg)}
+                </span>
               </div>
             </div>
 

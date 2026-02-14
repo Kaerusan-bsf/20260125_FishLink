@@ -3,12 +3,13 @@ import {requireUser} from '../../../lib/auth';
 import {prisma} from '../../../lib/prisma';
 import Link from 'next/link';
 import {refreshOrdersExpiration} from '../../../lib/expiration';
+import {formatMoneyKHR} from '../../../lib/formatMoneyKHR';
 
 export const dynamic = 'force-dynamic';
 
 function money(n: number | null | undefined) {
   const v = Number(n);
-  return Number.isFinite(v) ? v.toFixed(2) : '-';
+  return Number.isFinite(v) ? formatMoneyKHR(v) : '-';
 }
 
 function farmerPayout(order: any) {

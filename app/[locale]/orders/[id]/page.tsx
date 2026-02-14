@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {refreshOrderExpiration} from '../../../../lib/expiration';
 import {createNotification} from '../../../../lib/notifications';
 import {redirect} from 'next/navigation';
+import {formatMoneyKHR} from '../../../../lib/formatMoneyKHR';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ function getStatusLabel(t: (key: string, params?: any) => string, status: string
 }
 
 function money(n: number) {
-  return (Number.isFinite(n) ? n : 0).toFixed(2);
+  return formatMoneyKHR(Number.isFinite(n) ? n : 0);
 }
 
 function minMaxFromTiers(tiers: any[]) {
@@ -473,7 +474,7 @@ export default async function OrderDetailPage({
               {order.deliveryRequested ? (
                 farmerFreeEligible ? (
                   <>
-                    0.00 <span className="muted">({t('orders.freeDeliveryHint', {minKg: order.listing.freeDeliveryMinKg})})</span>
+                    {money(0)} <span className="muted">({t('orders.freeDeliveryHint', {minKg: order.listing.freeDeliveryMinKg})})</span>
                   </>
                 ) : farmerShowRangeEst ? (
                   `${money(farmerDeliveryMinEst)} - ${money(farmerDeliveryMaxEst)}`
@@ -481,7 +482,7 @@ export default async function OrderDetailPage({
                   money(farmerDeliveryMinEst)
                 )
               ) : (
-                '0.00'
+                money(0)
               )}
             </div>
 
@@ -524,7 +525,7 @@ export default async function OrderDetailPage({
               {order.deliveryRequested ? (
                 freeEligible ? (
                   <>
-                    0.00{' '}
+                    {money(0)}{' '}
                     <span className="muted">
                       ({t('orders.freeDeliveryHint', {minKg: order.listing.freeDeliveryMinKg})})
                     </span>
@@ -535,7 +536,7 @@ export default async function OrderDetailPage({
                   money(deliveryMinEst)
                 )
               ) : (
-                '0.00'
+                money(0)
               )}
             </div>
 
@@ -701,7 +702,7 @@ export default async function OrderDetailPage({
                       </option>
                       {sortedTiers.map((tier) => (
                         <option key={tier.id} value={tier.fee}>
-                          {tier.label} / {tier.fee}
+                          {tier.label} / {money(tier.fee)}
                         </option>
                       ))}
                     </select>
