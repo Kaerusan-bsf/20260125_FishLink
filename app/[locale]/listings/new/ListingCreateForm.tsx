@@ -24,6 +24,7 @@ type Props = {
     fishType: string;
     guttingAvailable: string;
     guttingPricePerKg: string;
+    guttingPriceHint: string;
     priceTypeLabel: string;
     priceTypeFixed: string;
     priceTypeTiered: string;
@@ -129,7 +130,8 @@ export default function ListingCreateForm({
       </label>
       <label>
         {labels.guttingPricePerKg}
-        <input name="guttingPricePerKg" type="number" step="0.1" required />
+        <input name="guttingPricePerKg" type="number" step="1" min="0" defaultValue={500} required />
+        <small>{labels.guttingPriceHint}</small>
       </label>
       <label>
         {labels.deliveryAvailable}

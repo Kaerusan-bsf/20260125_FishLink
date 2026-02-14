@@ -57,6 +57,7 @@
     "basePricePerKg": "Base price (KHR/kg)",
     "guttingAvailable": "Gutting available",
     "guttingPricePerKg": "Gutting fee (KHR/kg)",
+    "guttingPriceHint": "Suggested market rate: 500 riel/kg",
     "deliveryAvailable": "Delivery available",
     "deliveryFeeTiers": "Delivery fee range",
     "freeDeliveryMinKg": "Free delivery min kg",

@@ -205,6 +205,7 @@ export default async function ListingNewPage({params}: {params: {locale: string}
             fishType: t('listings.fishType'),
             guttingAvailable: t('listings.guttingAvailable'),
             guttingPricePerKg: t('listings.guttingPricePerKg'),
+            guttingPriceHint: t('listings.guttingPriceHint'),
             priceTypeLabel: t('listings.priceTypeLabel'),
             priceTypeFixed: t('listings.priceTypeFixed'),
             priceTypeTiered: t('listings.priceTypeTiered'),

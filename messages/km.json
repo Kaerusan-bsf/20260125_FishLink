@@ -57,6 +57,7 @@
     "basePricePerKg": "តម្លៃមូលដ្ឋាន (KHR/kg)",
     "guttingAvailable": "អាចកាត់សាច់",
     "guttingPricePerKg": "ថ្លៃកាត់សាច់ (KHR/kg)",
+    "guttingPriceHint": "តម្លៃណែនាំ៖ 500 riel/kg",
     "deliveryAvailable": "អាចដឹកជញ្ជូន",
     "deliveryFeeTiers": "កម្រិតថ្លៃដឹក",
     "freeDeliveryMinKg": "ដឹកជញ្ជូនឥតគិតថ្លៃ (kg)",

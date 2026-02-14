@@ -57,6 +57,7 @@
     "basePricePerKg": "基本単価 (KHR/kg)",
     "guttingAvailable": "下処理可",
     "guttingPricePerKg": "下処理料金 (KHR/kg)",
+    "guttingPriceHint": "相場目安：500 riel/kg",
     "deliveryAvailable": "配送可",
     "deliveryFeeTiers": "配送料金レンジ",
     "freeDeliveryMinKg": "送料無料最小kg",
