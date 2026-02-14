@@ -76,6 +76,7 @@ model DeliveryFeeTier {
 
 model Order {
   id                    String   @id @default(cuid())
+  requestId             String   @unique @default(cuid())
   status                String   // "REQUESTED" | "EXPIRED" | "ACCEPTED" etc
   restaurantId          String
   farmerId              String

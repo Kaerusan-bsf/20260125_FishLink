@@ -1,6 +1,6 @@
 'use client';
 
-import {useMemo, useState} from 'react';
+import {FormEvent, useMemo, useRef, useState} from 'react';
 import OrderEstimate from './OrderEstimate';
 
 type Props = {
@@ -93,13 +93,37 @@ export default function OrderFormClient(props: Props) {
   const [quantityKg, setQuantityKg] = useState<number>(Number(defaultValues.quantityKg || 0));
   const [guttingRequested, setGuttingRequested] = useState<boolean>(defaultValues.guttingRequested);
   const [deliveryRequested, setDeliveryRequested] = useState<boolean>(defaultValues.deliveryRequested);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const submitGuardRef = useRef<boolean>(false);
+  const requestIdRef = useRef<HTMLInputElement>(null);
 
   // 数量が空になったときに NaN にならないように
   const quantitySafe = useMemo(() => (Number.isFinite(quantityKg) ? quantityKg : 0), [quantityKg]);
 
+  function generateRequestId() {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    if (submitGuardRef.current) {
+      event.preventDefault();
+      return;
+    }
+
+    submitGuardRef.current = true;
+    if (requestIdRef.current) {
+      requestIdRef.current.value = generateRequestId();
+    }
+    setIsSubmitting(true);
+  }
+
   return (
-    <form action={createOrderAction}>
+    <form action={createOrderAction} onSubmit={onSubmit}>
       <input type="hidden" name="listingId" value={listingId} />
+      <input ref={requestIdRef} type="hidden" name="requestId" defaultValue="" />
 
       <label>
         {labels.quantityKg}
@@ -212,7 +236,7 @@ export default function OrderFormClient(props: Props) {
         {labels.estimateDelivery}: {tiersLabel}
       </div>
 
-      <button type="submit">{labels.submit}</button>
+      <button type="submit" disabled={isSubmitting}>{labels.submit}</button>
     </form>
   );
 }

@@ -12,6 +12,7 @@ import {createNotification} from '../../../../lib/notifications';
 import {DateTime} from 'luxon';
 import OrderFormClient from './OrderFormClient';
 import {formatMoneyKHR} from '../../../../lib/formatMoneyKHR';
+import {Prisma} from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
@@ -70,6 +71,8 @@ export default async function OrderNewPage({
   async function createOrder(formData: FormData) {
     'use server';
     const current = await requireUser(params.locale, 'RESTAURANT');
+    const requestIdRaw = String(formData.get('requestId') ?? '').trim();
+    const requestId = requestIdRaw || crypto.randomUUID();
 
     const listingIdInput = String(formData.get('listingId') ?? '');
     const quantityKg = Number(formData.get('quantityKg'));
@@ -153,48 +156,74 @@ export default async function OrderNewPage({
       ? restaurant.profile.googleMapUrl
       : (listingForOrder.farmer.profile?.googleMapUrl ?? '');
 
-    const order = await prisma.order.create({
-      data: {
-        listingId: listingForOrder.id,
-        restaurantId: current.id,
-        farmerId: listingForOrder.farmerId,
+    let order;
+    let created = false;
+    try {
+      order = await prisma.order.create({
+        data: {
+          requestId,
+          listingId: listingForOrder.id,
+          restaurantId: current.id,
+          farmerId: listingForOrder.farmerId,
 
-        quantityKg,
-        sizeRequestText,
-        timeBand,
-        timeDetail: timeDetail || null,
-        memo: memo || null,
+          quantityKg,
+          sizeRequestText,
+          timeBand,
+          timeDetail: timeDetail || null,
+          memo: memo || null,
 
-        guttingRequested: finalGuttingRequested,
-        deliveryRequested: finalDeliveryRequested,
+          guttingRequested: finalGuttingRequested,
+          deliveryRequested: finalDeliveryRequested,
 
-        status: 'REQUESTED',
-        expiresAt,
-        requestedDate,
+          status: 'REQUESTED',
+          expiresAt,
+          requestedDate,
 
-        // schema の Snap 名に合わせる
-        restaurantPhoneSnap: restaurant.profile.phone,
-        restaurantMapSnap: restaurant.profile.googleMapUrl,
-        farmerPhoneSnap: listingForOrder.farmer.profile?.phone ?? '',
-        farmerMapSnap: listingForOrder.farmer.profile?.googleMapUrl ?? '',
-        handoffMapSnap,
+          // schema の Snap 名に合わせる
+          restaurantPhoneSnap: restaurant.profile.phone,
+          restaurantMapSnap: restaurant.profile.googleMapUrl,
+          farmerPhoneSnap: listingForOrder.farmer.profile?.phone ?? '',
+          farmerMapSnap: listingForOrder.farmer.profile?.googleMapUrl ?? '',
+          handoffMapSnap,
 
-        basePricePerKgSnap: listingForOrder.basePricePerKg,
-        guttingPricePerKgSnap: listingForOrder.guttingPricePerKg,
+          basePricePerKgSnap: listingForOrder.basePricePerKg,
+          guttingPricePerKgSnap: listingForOrder.guttingPricePerKg,
 
-        pricingVersionSnap,
-        alphaRateSnap,
-        betaRateSnap,
-        betaDiscountRateSnap
+          pricingVersionSnap,
+          alphaRateSnap,
+          betaRateSnap,
+          betaDiscountRateSnap
+        }
+      });
+      created = true;
+    } catch (error) {
+      const isDuplicateRequestId =
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002' &&
+        Array.isArray(error.meta?.target) &&
+        error.meta?.target.includes('requestId');
+
+      if (!isDuplicateRequestId) {
+        throw error;
       }
-    });
 
-    await createNotification({
-      userId: listingForOrder.farmerId,
-      titleKey: 'notifications.orderRequested.title',
-      bodyKey: 'notifications.orderRequested.body',
-      params: {orderId: order.id}
-    });
+      order = await prisma.order.findUnique({
+        where: {requestId}
+      });
+    }
+
+    if (!order) {
+      throw new Error('Failed to create or fetch order by requestId');
+    }
+
+    if (created) {
+      await createNotification({
+        userId: listingForOrder.farmerId,
+        titleKey: 'notifications.orderRequested.title',
+        bodyKey: 'notifications.orderRequested.body',
+        params: {orderId: order.id}
+      });
+    }
 
     redirect(`/${params.locale}/orders/${order.id}`);
   }
