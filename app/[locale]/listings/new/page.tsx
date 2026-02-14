@@ -1,6 +1,6 @@
 import {getTranslations} from 'next-intl/server';
 import {redirect} from 'next/navigation';
-import PhotoUploadField from '../PhotoUploadField';
+import ListingCreateForm from './ListingCreateForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,8 +29,11 @@ export default async function ListingNewPage({params}: {params: {locale: string}
 
     const { requireUser } = await import('../../../../lib/auth');
     const { prisma } = await import('../../../../lib/prisma');
+    const {Prisma} = await import('@prisma/client');
 
     const current = await requireUser(params.locale, 'FARMER');
+    const requestIdRaw = String(formData.get('requestId') ?? '').trim();
+    const requestId = requestIdRaw || crypto.randomUUID();
     const fishType = String(formData.get('fishType') ?? '').trim();
     const basePricePerKg = Number(formData.get('basePricePerKg'));
     const guttingAvailable = formData.get('guttingAvailable') === 'on';
@@ -53,23 +56,45 @@ export default async function ListingNewPage({params}: {params: {locale: string}
       };
     });
 
-    await prisma.listing.create({
-      data: {
-        farmerId: current.id,
-        fishType,
-        basePricePerKg,
-        guttingAvailable,
-        guttingPricePerKg,
-        deliveryAvailable,
-        deliveryFeeTiers: {
-          create: tiers
-        },
-        freeDeliveryMinKg,
-        minOrderKg,
-        isActive: true,
-        photoUrl: photoUrl || null
+    let listing = null;
+    try {
+      listing = await prisma.listing.create({
+        data: {
+          requestId,
+          farmerId: current.id,
+          fishType,
+          basePricePerKg,
+          guttingAvailable,
+          guttingPricePerKg,
+          deliveryAvailable,
+          deliveryFeeTiers: {
+            create: tiers
+          },
+          freeDeliveryMinKg,
+          minOrderKg,
+          isActive: true,
+          photoUrl: photoUrl || null
+        }
+      });
+    } catch (error) {
+      const isDuplicateRequestId =
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002' &&
+        Array.isArray(error.meta?.target) &&
+        error.meta?.target.includes('requestId');
+
+      if (isDuplicateRequestId) {
+        listing = await prisma.listing.findUnique({
+          where: {requestId}
+        });
+      } else {
+        throw error;
       }
-    });
+    }
+
+    if (!listing) {
+      throw new Error('Failed to create or fetch listing by requestId');
+    }
 
     redirect(`/${params.locale}/listings`);
   }
@@ -80,66 +105,31 @@ export default async function ListingNewPage({params}: {params: {locale: string}
         <h2>{t('listings.new')}</h2>
       </div>
       <div className="card">
-        <form action={createListing}>
-          <label>
-            {t('listings.fishType')}
-            <input name="fishType" required />
-          </label>
-          <label>
-            {t('listings.basePricePerKg')}
-            <input name="basePricePerKg" type="number" step="0.1" required />
-          </label>
-          <label>
-            {t('listings.guttingAvailable')}
-            <input name="guttingAvailable" type="checkbox" defaultChecked />
-          </label>
-          <label>
-            {t('listings.guttingPricePerKg')}
-            <input name="guttingPricePerKg" type="number" step="0.1" required />
-          </label>
-          <label>
-            {t('listings.deliveryAvailable')}
-            <input name="deliveryAvailable" type="checkbox" defaultChecked />
-          </label>
-          <PhotoUploadField
-            configured={cloudinaryConfigured}
-            labels={{
-              photoOptional: t('listings.photoOptional'),
-              uploadPhoto: t('listings.uploadPhoto'),
-              uploading: t('listings.uploading'),
-              removePhoto: t('listings.removePhoto'),
-              photoNotConfigured: t('listings.photoNotConfigured')
-            }}
-          />
-          <div className="card" style={{background: '#f8fafc'}}>
-            <strong>{t('listings.deliveryFeeTiers')}</strong>
-            {defaultTiers.map((tier, index) => (
-              <div className="grid grid-2" key={index}>
-                <label>
-                  {t('listings.tierMinKm')}
-                  <input name={`tierMin${index}`} type="number" defaultValue={tier.minKm} />
-                </label>
-                <label>
-                  {t('listings.tierMaxKm')}
-                  <input name={`tierMax${index}`} type="number" defaultValue={tier.maxKm} />
-                </label>
-                <label>
-                  {t('listings.tierFee')}
-                  <input name={`tierFee${index}`} type="number" step="0.1" defaultValue={tier.fee} />
-                </label>
-              </div>
-            ))}
-          </div>
-          <label>
-            {t('listings.freeDeliveryMinKg')}
-            <input name="freeDeliveryMinKg" type="number" step="0.1" />
-          </label>
-          <label>
-            {t('listings.minOrderKg')}
-            <input name="minOrderKg" type="number" step="0.1" />
-          </label>
-          <button type="submit">{t('listings.create')}</button>
-        </form>
+        <ListingCreateForm
+          createListingAction={createListing}
+          cloudinaryConfigured={cloudinaryConfigured}
+          defaultTiers={defaultTiers}
+          labels={{
+            fishType: t('listings.fishType'),
+            basePricePerKg: t('listings.basePricePerKg'),
+            guttingAvailable: t('listings.guttingAvailable'),
+            guttingPricePerKg: t('listings.guttingPricePerKg'),
+            deliveryAvailable: t('listings.deliveryAvailable'),
+            deliveryFeeTiers: t('listings.deliveryFeeTiers'),
+            tierMinKm: t('listings.tierMinKm'),
+            tierMaxKm: t('listings.tierMaxKm'),
+            tierFee: t('listings.tierFee'),
+            freeDeliveryMinKg: t('listings.freeDeliveryMinKg'),
+            minOrderKg: t('listings.minOrderKg'),
+            create: t('listings.create'),
+            submitting: `${t('listings.create')}...`,
+            photoOptional: t('listings.photoOptional'),
+            uploadPhoto: t('listings.uploadPhoto'),
+            uploading: t('listings.uploading'),
+            removePhoto: t('listings.removePhoto'),
+            photoNotConfigured: t('listings.photoNotConfigured')
+          }}
+        />
       </div>
     </main>
   );

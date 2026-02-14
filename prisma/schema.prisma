@@ -45,6 +45,7 @@ model Profile {
 
 model Listing {
   id                String   @id @default(cuid())
+  requestId         String   @unique @default(cuid())
   farmerId          String
   farmer            User     @relation(fields: [farmerId], references: [id])
   fishType          String
