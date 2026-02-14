@@ -106,9 +106,7 @@ export default function OrderFormClient(props: Props) {
   const [quantityKg, setQuantityKg] = useState<number>(Number(defaultValues.quantityKg || 0));
   const [guttingRequested, setGuttingRequested] = useState<boolean>(defaultValues.guttingRequested);
   const [deliveryRequested, setDeliveryRequested] = useState<boolean>(defaultValues.deliveryRequested);
-  const [selectedTierSortOrder, setSelectedTierSortOrder] = useState<string>(
-    sizePriceTiers.length ? String(sizePriceTiers[0].sortOrder) : ''
-  );
+  const [selectedTierSortOrder, setSelectedTierSortOrder] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const submitGuardRef = useRef<boolean>(false);
   const requestIdRef = useRef<HTMLInputElement>(null);
