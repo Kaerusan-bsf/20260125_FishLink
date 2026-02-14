@@ -2,6 +2,7 @@
 
 import {FormEvent, useMemo, useRef, useState} from 'react';
 import OrderEstimate from './OrderEstimate';
+import {formatMoneyKHR} from '../../../../lib/formatMoneyKHR';
 
 type Props = {
   locale: string;
@@ -12,6 +13,15 @@ type Props = {
   tiersLabel: string;
   guttingAvailable: boolean;
   deliveryAvailable: boolean;
+  priceType: 'FIXED' | 'TIERED';
+  fixedPriceKhrPerKg: number;
+  alphaRate: number;
+  sizePriceTiers: Array<{
+    sortOrder: number;
+    minHeadPerKg: number;
+    maxHeadPerKg: number;
+    priceKhrPerKg: number;
+  }>;
 
   defaultValues: {
     quantityKg: string;
@@ -24,7 +34,6 @@ type Props = {
   };
 
   // Pricing / fee inputs
-  displayUnitPricePerKg: number; // α込み単価
   guttingPricePerKg: number;
   betaRate: number;
   deliveryMin: number;
@@ -46,6 +55,7 @@ type Props = {
     memo: string;
     guttingRequested: string;
     deliveryRequested: string;
+    sizeTierLabel: string;
     submit: string;
 
     // estimate labels
@@ -79,7 +89,10 @@ export default function OrderFormClient(props: Props) {
     deliveryAvailable,
     tiersLabel,
     defaultValues,
-    displayUnitPricePerKg,
+    priceType,
+    fixedPriceKhrPerKg,
+    alphaRate,
+    sizePriceTiers,
     guttingPricePerKg,
     betaRate,
     deliveryMin,
@@ -93,12 +106,23 @@ export default function OrderFormClient(props: Props) {
   const [quantityKg, setQuantityKg] = useState<number>(Number(defaultValues.quantityKg || 0));
   const [guttingRequested, setGuttingRequested] = useState<boolean>(defaultValues.guttingRequested);
   const [deliveryRequested, setDeliveryRequested] = useState<boolean>(defaultValues.deliveryRequested);
+  const [selectedTierSortOrder, setSelectedTierSortOrder] = useState<string>(
+    sizePriceTiers.length ? String(sizePriceTiers[0].sortOrder) : ''
+  );
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const submitGuardRef = useRef<boolean>(false);
   const requestIdRef = useRef<HTMLInputElement>(null);
 
   // 数量が空になったときに NaN にならないように
   const quantitySafe = useMemo(() => (Number.isFinite(quantityKg) ? quantityKg : 0), [quantityKg]);
+  const selectedTierPriceKhrPerKg = useMemo(() => {
+    const selected = sizePriceTiers.find((tier) => String(tier.sortOrder) === selectedTierSortOrder);
+    return selected?.priceKhrPerKg ?? fixedPriceKhrPerKg;
+  }, [fixedPriceKhrPerKg, selectedTierSortOrder, sizePriceTiers]);
+  const displayUnitPricePerKg = useMemo(() => {
+    const basePrice = priceType === 'TIERED' ? selectedTierPriceKhrPerKg : fixedPriceKhrPerKg;
+    return basePrice * (1 + alphaRate);
+  }, [alphaRate, fixedPriceKhrPerKg, priceType, selectedTierPriceKhrPerKg]);
 
   function generateRequestId() {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -124,6 +148,27 @@ export default function OrderFormClient(props: Props) {
     <form action={createOrderAction} onSubmit={onSubmit}>
       <input type="hidden" name="listingId" value={listingId} />
       <input ref={requestIdRef} type="hidden" name="requestId" defaultValue="" />
+      {priceType === 'TIERED' ? (
+        <div className="card" style={{background: '#f8fafc'}}>
+          <strong>{labels.sizeTierLabel}</strong>
+          {sizePriceTiers.map((tier) => {
+            const label = `${tier.minHeadPerKg}–${tier.maxHeadPerKg} head/kg — ${formatMoneyKHR(tier.priceKhrPerKg).replace(' KHR', '')} riel/kg`;
+            return (
+              <label key={tier.sortOrder} style={{display: 'block'}}>
+                <input
+                  type="radio"
+                  name="selectedSizeTierSortOrder"
+                  value={tier.sortOrder}
+                  required
+                  checked={selectedTierSortOrder === String(tier.sortOrder)}
+                  onChange={(e) => setSelectedTierSortOrder(e.target.value)}
+                />{' '}
+                {label}
+              </label>
+            );
+          })}
+        </div>
+      ) : null}
 
       <label>
         {labels.quantityKg}
@@ -137,10 +182,14 @@ export default function OrderFormClient(props: Props) {
         />
       </label>
 
-      <label>
-        {labels.sizeRequestText}
-        <input name="sizeRequestText" required defaultValue={defaultValues.sizeRequestText} />
-      </label>
+      {priceType === 'FIXED' ? (
+        <label>
+          {labels.sizeRequestText}
+          <input name="sizeRequestText" required defaultValue={defaultValues.sizeRequestText} />
+        </label>
+      ) : (
+        <input name="sizeRequestText" type="hidden" value="" />
+      )}
 
       <label>
         {labels.requestedDateLabel}

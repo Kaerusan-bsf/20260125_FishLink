@@ -12,6 +12,13 @@ const defaultTiers = [
   {minKm: 20, maxKm: 30, fee: 6}
 ];
 
+const defaultSizePriceTiers = [
+  {minHeadPerKg: 4, maxHeadPerKg: 5, priceKhrPerKg: 4500},
+  {minHeadPerKg: 6, maxHeadPerKg: 8, priceKhrPerKg: 5000},
+  {minHeadPerKg: 8, maxHeadPerKg: 10, priceKhrPerKg: 5500},
+  {minHeadPerKg: 10, maxHeadPerKg: 12, priceKhrPerKg: 6000}
+];
+
 export default async function ListingNewPage({params}: {params: {locale: string}}) {
 
   if (process.env.CI) {
@@ -34,8 +41,10 @@ export default async function ListingNewPage({params}: {params: {locale: string}
     const current = await requireUser(params.locale, 'FARMER');
     const requestIdRaw = String(formData.get('requestId') ?? '').trim();
     const requestId = requestIdRaw || crypto.randomUUID();
+    const priceTypeRaw = String(formData.get('priceType') ?? 'FIXED').trim();
+    const priceType = priceTypeRaw === 'TIERED' ? 'TIERED' : 'FIXED';
     const fishType = String(formData.get('fishType') ?? '').trim();
-    const basePricePerKg = Number(formData.get('basePricePerKg'));
+    const fixedPriceKhrPerKgRaw = Number(formData.get('fixedPriceKhrPerKg'));
     const guttingAvailable = formData.get('guttingAvailable') === 'on';
     const guttingPricePerKg = Number(formData.get('guttingPricePerKg'));
     const deliveryAvailable = formData.get('deliveryAvailable') === 'on';
@@ -44,6 +53,27 @@ export default async function ListingNewPage({params}: {params: {locale: string}
       ? Number(formData.get('freeDeliveryMinKg'))
       : null;
     const minOrderKg = formData.get('minOrderKg') ? Number(formData.get('minOrderKg')) : null;
+
+    const sizePriceTiers = defaultSizePriceTiers
+      .map((tier, index) => {
+        const minHeadPerKg = Number(formData.get(`sizeMin${index}`));
+        const maxHeadPerKg = Number(formData.get(`sizeMax${index}`));
+        const priceKhrPerKg = Number(formData.get(`sizePrice${index}`));
+        if (
+          !Number.isFinite(minHeadPerKg) ||
+          !Number.isFinite(maxHeadPerKg) ||
+          !Number.isFinite(priceKhrPerKg)
+        ) {
+          return null;
+        }
+        return {
+          minHeadPerKg,
+          maxHeadPerKg,
+          priceKhrPerKg,
+          sortOrder: index
+        };
+      })
+      .filter((tier): tier is {minHeadPerKg: number; maxHeadPerKg: number; priceKhrPerKg: number; sortOrder: number} => tier != null);
 
     const tiers = defaultTiers.map((tier, index) => {
       const minKm = Number(formData.get(`tierMin${index}`));
@@ -56,22 +86,82 @@ export default async function ListingNewPage({params}: {params: {locale: string}
       };
     });
 
+    if (!fishType) {
+      redirect(`/${params.locale}/listings/new`);
+    }
+
+    const isPositiveInteger = (n: number) => Number.isInteger(n) && n > 0;
+    const isNonNegativeInteger = (n: number) => Number.isInteger(n) && n >= 0;
+
+    if (!isPositiveInteger(Math.round(guttingPricePerKg))) {
+      redirect(`/${params.locale}/listings/new`);
+    }
+    if (freeDeliveryMinKg != null && !isNonNegativeInteger(Math.round(freeDeliveryMinKg))) {
+      redirect(`/${params.locale}/listings/new`);
+    }
+    if (minOrderKg != null && !isNonNegativeInteger(Math.round(minOrderKg))) {
+      redirect(`/${params.locale}/listings/new`);
+    }
+    for (const deliveryTier of tiers) {
+      if (!isNonNegativeInteger(Math.round(deliveryTier.fee))) {
+        redirect(`/${params.locale}/listings/new`);
+      }
+    }
+
+    let fixedPriceKhrPerKg: number | null = null;
+    let basePricePerKg: number;
+    let normalizedSizeTiers: Array<{minHeadPerKg: number; maxHeadPerKg: number; priceKhrPerKg: number; sortOrder: number}> = [];
+
+    if (priceType === 'FIXED') {
+      if (!isPositiveInteger(Math.round(fixedPriceKhrPerKgRaw))) {
+        redirect(`/${params.locale}/listings/new`);
+      }
+      fixedPriceKhrPerKg = Math.round(fixedPriceKhrPerKgRaw);
+      basePricePerKg = fixedPriceKhrPerKg;
+    } else {
+      normalizedSizeTiers = sizePriceTiers.filter((tier) => {
+        return (
+          isPositiveInteger(Math.round(tier.minHeadPerKg)) &&
+          isPositiveInteger(Math.round(tier.maxHeadPerKg)) &&
+          isPositiveInteger(Math.round(tier.priceKhrPerKg)) &&
+          Math.round(tier.minHeadPerKg) <= Math.round(tier.maxHeadPerKg)
+        );
+      }).map((tier) => ({
+        minHeadPerKg: Math.round(tier.minHeadPerKg),
+        maxHeadPerKg: Math.round(tier.maxHeadPerKg),
+        priceKhrPerKg: Math.round(tier.priceKhrPerKg),
+        sortOrder: tier.sortOrder
+      }));
+
+      if (normalizedSizeTiers.length < 1 || normalizedSizeTiers.length > 4) {
+        redirect(`/${params.locale}/listings/new`);
+      }
+      // TODO(v0.2): 範囲重複チェックを追加する
+
+      basePricePerKg = Math.min(...normalizedSizeTiers.map((tier) => tier.priceKhrPerKg));
+    }
+
     let listing = null;
     try {
       listing = await prisma.listing.create({
         data: {
           requestId,
+          priceType,
+          fixedPriceKhrPerKg,
           farmerId: current.id,
           fishType,
           basePricePerKg,
           guttingAvailable,
-          guttingPricePerKg,
+          guttingPricePerKg: Math.round(guttingPricePerKg),
           deliveryAvailable,
           deliveryFeeTiers: {
             create: tiers
           },
-          freeDeliveryMinKg,
-          minOrderKg,
+          sizePriceTiers: {
+            create: normalizedSizeTiers
+          },
+          freeDeliveryMinKg: freeDeliveryMinKg != null ? Math.round(freeDeliveryMinKg) : null,
+          minOrderKg: minOrderKg != null ? Math.round(minOrderKg) : null,
           isActive: true,
           photoUrl: photoUrl || null
         }
@@ -111,9 +201,16 @@ export default async function ListingNewPage({params}: {params: {locale: string}
           defaultTiers={defaultTiers}
           labels={{
             fishType: t('listings.fishType'),
-            basePricePerKg: t('listings.basePricePerKg'),
             guttingAvailable: t('listings.guttingAvailable'),
             guttingPricePerKg: t('listings.guttingPricePerKg'),
+            priceTypeLabel: t('listings.priceTypeLabel'),
+            priceTypeFixed: t('listings.priceTypeFixed'),
+            priceTypeTiered: t('listings.priceTypeTiered'),
+            fixedPriceKhrPerKg: t('listings.fixedPriceKhrPerKg'),
+            sizePriceTiers: t('listings.sizePriceTiers'),
+            minHeadPerKg: t('listings.minHeadPerKg'),
+            maxHeadPerKg: t('listings.maxHeadPerKg'),
+            priceKhrPerKg: t('listings.priceKhrPerKg'),
             deliveryAvailable: t('listings.deliveryAvailable'),
             deliveryFeeTiers: t('listings.deliveryFeeTiers'),
             tierMinKm: t('listings.tierMinKm'),
@@ -129,6 +226,7 @@ export default async function ListingNewPage({params}: {params: {locale: string}
             removePhoto: t('listings.removePhoto'),
             photoNotConfigured: t('listings.photoNotConfigured')
           }}
+          defaultSizePriceTiers={defaultSizePriceTiers}
         />
       </div>
     </main>

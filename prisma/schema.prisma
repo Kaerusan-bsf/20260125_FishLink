@@ -7,9 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// NOTE:
-  // SQLiteでは enum / Json は使わない
-  // - βでは String + アプリ側制御で十分
+enum PriceType {
+  FIXED
+  TIERED
+}
 
 model User {
   id        String   @id @default(cuid())
@@ -46,6 +47,8 @@ model Profile {
 model Listing {
   id                String   @id @default(cuid())
   requestId         String   @unique @default(cuid())
+  priceType         PriceType @default(FIXED)
+  fixedPriceKhrPerKg Int?
   farmerId          String
   farmer            User     @relation(fields: [farmerId], references: [id])
   fishType          String
@@ -61,6 +64,7 @@ model Listing {
   updatedAt         DateTime @updatedAt
 
   deliveryFeeTiers  DeliveryFeeTier[]
+  sizePriceTiers    ListingSizePriceTier[]
   orders            Order[]   // ← これを追加
 }
 
@@ -72,6 +76,18 @@ model DeliveryFeeTier {
   label     String   // "0-5km" など
   fee       Float
   sortOrder Int
+}
+
+model ListingSizePriceTier {
+  id               String  @id @default(cuid())
+  listingId        String
+  listing          Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  minHeadPerKg     Int
+  maxHeadPerKg     Int
+  priceKhrPerKg    Int
+  sortOrder        Int
+
+  @@unique([listingId, sortOrder])
 }
 
 model Order {

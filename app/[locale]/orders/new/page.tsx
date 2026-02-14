@@ -56,7 +56,8 @@ export default async function OrderNewPage({
     where: {id: listingId},
     include: {
       farmer: {include: {profile: true}},
-      deliveryFeeTiers: true
+      deliveryFeeTiers: true,
+      sizePriceTiers: {orderBy: {sortOrder: 'asc'}}
     }
   });
 
@@ -76,7 +77,7 @@ export default async function OrderNewPage({
 
     const listingIdInput = String(formData.get('listingId') ?? '');
     const quantityKg = Number(formData.get('quantityKg'));
-    const sizeRequestText = String(formData.get('sizeRequestText') ?? '').trim();
+    const sizeRequestTextInput = String(formData.get('sizeRequestText') ?? '').trim();
     const timeBand = String(formData.get('timeBand') ?? ''); // "MORNING" | "AFTERNOON" | "NIGHT"
     const dayOffset = Number(formData.get('dayOffset'));
     const selectedDate = String(formData.get('selectedDate') ?? '').trim();
@@ -85,7 +86,7 @@ export default async function OrderNewPage({
     const guttingRequested = formData.get('guttingRequested') === 'on';
     const deliveryRequested = formData.get('deliveryRequested') === 'on';
 
-    if (!listingIdInput || !quantityKg || !sizeRequestText || !timeBand) {
+    if (!listingIdInput || !quantityKg || !timeBand) {
       redirect(`/${params.locale}/orders`);
     }
 
@@ -93,7 +94,8 @@ export default async function OrderNewPage({
       where: {id: listingIdInput},
       include: {
         farmer: {include: {profile: true}},
-        deliveryFeeTiers: true
+        deliveryFeeTiers: true,
+        sizePriceTiers: {orderBy: {sortOrder: 'asc'}}
       }
     });
     if (!listingForOrder) {
@@ -150,6 +152,23 @@ export default async function OrderNewPage({
 
     const finalGuttingRequested = listingForOrder.guttingAvailable ? guttingRequested : false;
     const finalDeliveryRequested = listingForOrder.deliveryAvailable ? deliveryRequested : false;
+    let finalSizeRequestText = sizeRequestTextInput;
+    let effectiveBasePricePerKg = listingForOrder.fixedPriceKhrPerKg ?? Math.round(listingForOrder.basePricePerKg);
+    if (listingForOrder.priceType === 'TIERED') {
+      const selectedSizeTierSortOrderRaw = String(formData.get('selectedSizeTierSortOrder') ?? '').trim();
+      const selectedSizeTierSortOrder = Number(selectedSizeTierSortOrderRaw);
+      if (!Number.isInteger(selectedSizeTierSortOrder)) {
+        redirect(`/${params.locale}/orders/new?listingId=${listingForOrder.id}`);
+      }
+      const selectedTier = listingForOrder.sizePriceTiers.find((tier) => tier.sortOrder === selectedSizeTierSortOrder);
+      if (!selectedTier) {
+        redirect(`/${params.locale}/orders/new?listingId=${listingForOrder.id}`);
+      }
+      effectiveBasePricePerKg = selectedTier.priceKhrPerKg;
+      finalSizeRequestText = `${selectedTier.minHeadPerKg}–${selectedTier.maxHeadPerKg} head/kg`;
+    } else if (!finalSizeRequestText) {
+      redirect(`/${params.locale}/orders`);
+    }
 
     // 受け渡し地点（自動）
     const handoffMapSnap = finalDeliveryRequested
@@ -167,7 +186,7 @@ export default async function OrderNewPage({
           farmerId: listingForOrder.farmerId,
 
           quantityKg,
-          sizeRequestText,
+          sizeRequestText: finalSizeRequestText,
           timeBand,
           timeDetail: timeDetail || null,
           memo: memo || null,
@@ -186,7 +205,7 @@ export default async function OrderNewPage({
           farmerMapSnap: listingForOrder.farmer.profile?.googleMapUrl ?? '',
           handoffMapSnap,
 
-          basePricePerKgSnap: listingForOrder.basePricePerKg,
+          basePricePerKgSnap: effectiveBasePricePerKg,
           guttingPricePerKgSnap: listingForOrder.guttingPricePerKg,
 
           pricingVersionSnap,
@@ -236,9 +255,6 @@ export default async function OrderNewPage({
     const alphaUi = pricingForUi?.alphaRate ?? 0;
     const betaUi = pricingForUi?.betaRate ?? 0;
   
-    // 一覧と同じ「α込み単価」
-    const displayUnitPricePerKg = listing.basePricePerKg * (1 + alphaUi);
-  
     // 配送費レンジ（tier fee の min / max）
     const feeNums = (listing.deliveryFeeTiers ?? [])
       .map((tier) => Number(tier.fee))
@@ -262,6 +278,29 @@ export default async function OrderNewPage({
         <p className="muted">
           {(listing.farmer.profile?.entityName ?? '-') } / {listing.fishType}
         </p>
+        <div className="muted" style={{marginTop: 4}}>
+          {t('listings.priceTypeLabel')}:{' '}
+          {listing.priceType === 'TIERED' ? t('listings.priceTypeTiered') : t('listings.priceTypeFixed')}
+        </div>
+        {listing.priceType === 'TIERED' ? (
+          <div style={{marginTop: 8}}>
+            <strong>{t('listings.sizePriceTiers')}</strong>
+            <table>
+              <tbody>
+                {(listing.sizePriceTiers.length ? listing.sizePriceTiers : []).map((tier) => (
+                  <tr key={tier.id}>
+                    <td>{tier.minHeadPerKg}-{tier.maxHeadPerKg} head/kg</td>
+                    <td>{formatMoneyKHR(tier.priceKhrPerKg).replace(' KHR', '')} riel/kg</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="muted" style={{marginTop: 4}}>
+            {t('listings.fixedPriceKhrPerKg')}: {formatMoneyKHR(listing.fixedPriceKhrPerKg ?? Math.round(listing.basePricePerKg)).replace(' KHR', '')} riel/kg
+          </p>
+        )}
         {listing.farmer.profile?.province ? (
           <p className="muted" style={{marginTop: 4}}>
             📍 {listing.farmer.profile.province}
@@ -284,6 +323,15 @@ export default async function OrderNewPage({
           tiersLabel={tiersLabel}
           guttingAvailable={listing.guttingAvailable}
           deliveryAvailable={listing.deliveryAvailable}
+          priceType={listing.priceType === 'TIERED' ? 'TIERED' : 'FIXED'}
+          fixedPriceKhrPerKg={listing.fixedPriceKhrPerKg ?? Math.round(listing.basePricePerKg)}
+          alphaRate={alphaUi}
+          sizePriceTiers={listing.sizePriceTiers.map((tier) => ({
+            sortOrder: tier.sortOrder,
+            minHeadPerKg: tier.minHeadPerKg,
+            maxHeadPerKg: tier.maxHeadPerKg,
+            priceKhrPerKg: tier.priceKhrPerKg
+          }))}
           defaultValues={{
             quantityKg: reorder?.quantityKg != null ? String(reorder.quantityKg) : '',
             sizeRequestText: reorder?.sizeRequestText ?? '',
@@ -293,7 +341,6 @@ export default async function OrderNewPage({
             guttingRequested: Boolean(reorder?.guttingRequested ?? false),
             deliveryRequested: Boolean(reorder?.deliveryRequested ?? false)
           }}
-          displayUnitPricePerKg={displayUnitPricePerKg}
           guttingPricePerKg={listing.guttingPricePerKg}
           betaRate={betaUi}
           deliveryMin={deliveryMin}
@@ -313,6 +360,7 @@ export default async function OrderNewPage({
             memo: t('orders.memo'),
             guttingRequested: t('orders.guttingRequested'),
             deliveryRequested: t('orders.deliveryRequested'),
+            sizeTierLabel: t('orders.sizeRequestText'),
             submit: t('orders.submit'),
 
             // ↓ 概算UI（B：内訳＋合計レンジ）

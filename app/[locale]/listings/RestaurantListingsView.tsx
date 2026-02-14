@@ -12,6 +12,10 @@ type ListingViewItem = {
   province: string | null;
   district: string | null;
   fishType: string;
+  priceType: 'FIXED' | 'TIERED';
+  fixedPriceKhrPerKg: number;
+  tierMinPriceKhrPerKg: number;
+  tierMaxPriceKhrPerKg: number;
   basePricePerKg: number;
   displayPricePerKg: number;
   deliveryAvailable: boolean;
@@ -34,6 +38,8 @@ type Labels = {
   minOrderKg: string;
   updatedAt: string;
   order: string;
+  priceTypeFixed: string;
+  priceTypeTiered: string;
   yes: string;
   no: string;
 };
@@ -47,7 +53,14 @@ export default function RestaurantListingsView({
   listings: ListingViewItem[];
   labels: Labels;
 }) {
-  const pricePerKgLabel = (price: number) => `${formatMoneyKHR(price)} / kg`;
+  const toRielPerKg = (price: number) => `${formatMoneyKHR(price).replace(' KHR', '')} riel/kg`;
+  const restaurantPriceLabel = (listing: ListingViewItem) => {
+    if (listing.priceType === 'TIERED') {
+      return `${formatMoneyKHR(listing.tierMinPriceKhrPerKg).replace(' KHR', '')}〜${formatMoneyKHR(listing.tierMaxPriceKhrPerKg).replace(' KHR', '')} riel/kg`;
+    }
+    return toRielPerKg(listing.fixedPriceKhrPerKg);
+  };
+  const priceTypeBadge = (listing: ListingViewItem) => (listing.priceType === 'TIERED' ? labels.priceTypeTiered : labels.priceTypeFixed);
 
   const [view, setView] = useState<'list' | 'grid'>('list');
 
@@ -118,7 +131,10 @@ export default function RestaurantListingsView({
                   ) : null}
                 </td>
                 <td>{listing.fishType}</td>
-                <td>{pricePerKgLabel(listing.displayPricePerKg ?? listing.basePricePerKg)}</td>
+                <td>
+                  <div>{restaurantPriceLabel(listing)}</div>
+                  <span className="badge">{priceTypeBadge(listing)}</span>
+                </td>
                 <td>{listing.deliveryAvailable ? labels.yes : labels.no}</td>
                 <td>{listing.deliveryFeeTiersLabel}</td>
                 <td>{listing.freeDeliveryMinKg ?? '-'}</td>
@@ -178,8 +194,9 @@ export default function RestaurantListingsView({
               <div style={{display: 'flex', alignItems: 'baseline', gap: 8}}>
                 <span style={{fontSize: 20, fontWeight: 700}}>{listing.fishType}</span>
                 <span style={{fontSize: 16, fontWeight: 700}}>
-                  {pricePerKgLabel(listing.displayPricePerKg ?? listing.basePricePerKg)}
+                  {restaurantPriceLabel(listing)}
                 </span>
+                <span className="badge">{priceTypeBadge(listing)}</span>
               </div>
             </div>
 

@@ -3,21 +3,35 @@
 import {FormEvent, useRef, useState} from 'react';
 import PhotoUploadField from '../PhotoUploadField';
 
-type TierInput = {
+type DeliveryTierInput = {
   minKm: number;
   maxKm: number;
   fee: number;
 };
 
+type SizePriceTierInput = {
+  minHeadPerKg: number;
+  maxHeadPerKg: number;
+  priceKhrPerKg: number;
+};
+
 type Props = {
   createListingAction: (formData: FormData) => void;
   cloudinaryConfigured: boolean;
-  defaultTiers: TierInput[];
+  defaultTiers: DeliveryTierInput[];
+  defaultSizePriceTiers: SizePriceTierInput[];
   labels: {
     fishType: string;
-    basePricePerKg: string;
     guttingAvailable: string;
     guttingPricePerKg: string;
+    priceTypeLabel: string;
+    priceTypeFixed: string;
+    priceTypeTiered: string;
+    fixedPriceKhrPerKg: string;
+    sizePriceTiers: string;
+    minHeadPerKg: string;
+    maxHeadPerKg: string;
+    priceKhrPerKg: string;
     deliveryAvailable: string;
     deliveryFeeTiers: string;
     tierMinKm: string;
@@ -46,9 +60,11 @@ export default function ListingCreateForm({
   createListingAction,
   cloudinaryConfigured,
   defaultTiers,
+  defaultSizePriceTiers,
   labels
 }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [priceType, setPriceType] = useState<'FIXED' | 'TIERED'>('FIXED');
   const submitGuardRef = useRef(false);
   const requestIdInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,9 +90,38 @@ export default function ListingCreateForm({
         <input name="fishType" required />
       </label>
       <label>
-        {labels.basePricePerKg}
-        <input name="basePricePerKg" type="number" step="0.1" required />
+        {labels.priceTypeLabel}
+        <select name="priceType" value={priceType} onChange={(e) => setPriceType(e.target.value as 'FIXED' | 'TIERED')}>
+          <option value="FIXED">{labels.priceTypeFixed}</option>
+          <option value="TIERED">{labels.priceTypeTiered}</option>
+        </select>
       </label>
+      {priceType === 'FIXED' ? (
+        <label>
+          {labels.fixedPriceKhrPerKg}
+          <input name="fixedPriceKhrPerKg" type="number" step="1" min="1" required />
+        </label>
+      ) : (
+        <div className="card" style={{background: '#f8fafc'}}>
+          <strong>{labels.sizePriceTiers}</strong>
+          {defaultSizePriceTiers.map((tier, index) => (
+            <div className="grid grid-2" key={index}>
+              <label>
+                {labels.minHeadPerKg}
+                <input name={`sizeMin${index}`} type="number" min="1" step="1" defaultValue={tier.minHeadPerKg} />
+              </label>
+              <label>
+                {labels.maxHeadPerKg}
+                <input name={`sizeMax${index}`} type="number" min="1" step="1" defaultValue={tier.maxHeadPerKg} />
+              </label>
+              <label>
+                {labels.priceKhrPerKg}
+                <input name={`sizePrice${index}`} type="number" min="1" step="1" defaultValue={tier.priceKhrPerKg} />
+              </label>
+            </div>
+          ))}
+        </div>
+      )}
       <label>
         {labels.guttingAvailable}
         <input name="guttingAvailable" type="checkbox" defaultChecked />
@@ -113,18 +158,18 @@ export default function ListingCreateForm({
             </label>
             <label>
               {labels.tierFee}
-              <input name={`tierFee${index}`} type="number" step="0.1" defaultValue={tier.fee} />
+              <input name={`tierFee${index}`} type="number" step="1" min="0" defaultValue={tier.fee} />
             </label>
           </div>
         ))}
       </div>
       <label>
         {labels.freeDeliveryMinKg}
-        <input name="freeDeliveryMinKg" type="number" step="0.1" />
+        <input name="freeDeliveryMinKg" type="number" step="1" min="0" />
       </label>
       <label>
         {labels.minOrderKg}
-        <input name="minOrderKg" type="number" step="0.1" />
+        <input name="minOrderKg" type="number" step="1" min="0" />
       </label>
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? labels.submitting : labels.create}
