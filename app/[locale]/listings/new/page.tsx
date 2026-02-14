@@ -55,15 +55,24 @@ export default async function ListingNewPage({params}: {params: {locale: string}
     const minOrderKg = formData.get('minOrderKg') ? Number(formData.get('minOrderKg')) : null;
 
     const sizePriceTiers = defaultSizePriceTiers
-      .map((tier, index) => {
-        const minHeadPerKg = Number(formData.get(`sizeMin${index}`));
-        const maxHeadPerKg = Number(formData.get(`sizeMax${index}`));
+      .map((_, index) => {
+        const rangeRaw = String(formData.get(`sizeRange${index}`) ?? '').trim();
+        const normalizedRange = rangeRaw.replaceAll('–', '-');
+        const parts = normalizedRange.split('-');
+        if (parts.length !== 2) {
+          return null;
+        }
+        const minHeadPerKg = Number.parseInt(parts[0].trim(), 10);
+        const maxHeadPerKg = Number.parseInt(parts[1].trim(), 10);
         const priceKhrPerKg = Number(formData.get(`sizePrice${index}`));
-        if (
-          !Number.isFinite(minHeadPerKg) ||
-          !Number.isFinite(maxHeadPerKg) ||
-          !Number.isFinite(priceKhrPerKg)
-        ) {
+        const hasValidRangeNumbers =
+          Number.isInteger(minHeadPerKg) &&
+          Number.isInteger(maxHeadPerKg) &&
+          minHeadPerKg > 0 &&
+          maxHeadPerKg > 0 &&
+          minHeadPerKg <= maxHeadPerKg;
+        const hasValidPrice = Number.isInteger(priceKhrPerKg) && priceKhrPerKg > 0;
+        if (!hasValidRangeNumbers || !hasValidPrice) {
           return null;
         }
         return {
@@ -119,19 +128,12 @@ export default async function ListingNewPage({params}: {params: {locale: string}
       fixedPriceKhrPerKg = Math.round(fixedPriceKhrPerKgRaw);
       basePricePerKg = fixedPriceKhrPerKg;
     } else {
-      normalizedSizeTiers = sizePriceTiers.filter((tier) => {
-        return (
-          isPositiveInteger(Math.round(tier.minHeadPerKg)) &&
-          isPositiveInteger(Math.round(tier.maxHeadPerKg)) &&
-          isPositiveInteger(Math.round(tier.priceKhrPerKg)) &&
-          Math.round(tier.minHeadPerKg) <= Math.round(tier.maxHeadPerKg)
-        );
-      }).map((tier) => ({
-        minHeadPerKg: Math.round(tier.minHeadPerKg),
-        maxHeadPerKg: Math.round(tier.maxHeadPerKg),
-        priceKhrPerKg: Math.round(tier.priceKhrPerKg),
-        sortOrder: tier.sortOrder
-      }));
+      // v0.1 requires every tier row to be valid so listing pricing remains unambiguous.
+      if (sizePriceTiers.length !== defaultSizePriceTiers.length) {
+        redirect(`/${params.locale}/listings/new`);
+      }
+
+      normalizedSizeTiers = sizePriceTiers;
 
       if (normalizedSizeTiers.length < 1 || normalizedSizeTiers.length > 4) {
         redirect(`/${params.locale}/listings/new`);

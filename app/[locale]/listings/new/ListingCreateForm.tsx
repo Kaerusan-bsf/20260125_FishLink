@@ -107,12 +107,13 @@ export default function ListingCreateForm({
           {defaultSizePriceTiers.map((tier, index) => (
             <div className="grid grid-2" key={index}>
               <label>
-                {labels.minHeadPerKg}
-                <input name={`sizeMin${index}`} type="number" min="1" step="1" defaultValue={tier.minHeadPerKg} />
-              </label>
-              <label>
-                {labels.maxHeadPerKg}
-                <input name={`sizeMax${index}`} type="number" min="1" step="1" defaultValue={tier.maxHeadPerKg} />
+                {`${labels.minHeadPerKg}-${labels.maxHeadPerKg}`}
+                <input
+                  name={`sizeRange${index}`}
+                  type="text"
+                  placeholder="4-5"
+                  defaultValue={`${tier.minHeadPerKg}-${tier.maxHeadPerKg}`}
+                />
               </label>
               <label>
                 {labels.priceKhrPerKg}
