@@ -31,11 +31,22 @@ export default async function ProfilePage({
 
     const province = String(formData.get('province') ?? '').trim() || null;
     const district = String(formData.get('district') ?? '').trim() || null;
+    const latRaw = String(formData.get('lat') ?? '').trim();
+    const lngRaw = String(formData.get('lng') ?? '').trim();
+    const lat = latRaw === '' ? null : Number(latRaw);
+    const lng = lngRaw === '' ? null : Number(lngRaw);
+
+    if (lat != null && (!Number.isFinite(lat) || lat < -90 || lat > 90)) {
+      redirect(`/${params.locale}/profile`);
+    }
+    if (lng != null && (!Number.isFinite(lng) || lng < -180 || lng > 180)) {
+      redirect(`/${params.locale}/profile`);
+    }
 
     await prisma.profile.upsert({
       where: {userId: current.id},
-      update: {name, entityName, phone, googleMapUrl, province, district},
-      create: {userId: current.id, name, entityName, phone, googleMapUrl, province, district}
+      update: {name, entityName, phone, googleMapUrl, lat, lng, province, district},
+      create: {userId: current.id, name, entityName, phone, googleMapUrl, lat, lng, province, district}
     });
 
     redirect(`/${params.locale}/profile?saved=1`);
@@ -68,6 +79,16 @@ export default async function ProfilePage({
           <label>
             {t('profile.mapUrl')}
             <input name="googleMapUrl" required defaultValue={profile?.googleMapUrl ?? ''} />
+          </label>
+
+          <label>
+            Latitude
+            <input name="lat" type="number" step="any" min="-90" max="90" defaultValue={profile?.lat ?? ''} />
+          </label>
+
+          <label>
+            Longitude
+            <input name="lng" type="number" step="any" min="-180" max="180" defaultValue={profile?.lng ?? ''} />
           </label>
 
           <label>

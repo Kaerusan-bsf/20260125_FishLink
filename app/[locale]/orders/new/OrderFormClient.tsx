@@ -10,7 +10,6 @@ type Props = {
 
   // 表示・初期値
   todayDate: string | null;
-  tiersLabel: string;
   guttingAvailable: boolean;
   deliveryAvailable: boolean;
   priceType: 'FIXED' | 'TIERED';
@@ -36,9 +35,8 @@ type Props = {
   // Pricing / fee inputs
   guttingPricePerKg: number;
   betaRate: number;
-  deliveryMin: number;
-  deliveryMax: number;
-  freeDeliveryMinKg: number | null;
+  deliveryFeeKhr: number;
+  distanceKm: number;
 
   // labels（t() 渡し）
   labels: {
@@ -66,7 +64,6 @@ type Props = {
     estimateDelivery: string;
     estimateTotal: string;
     estimateNote: string;
-    freeDeliveryHint: string;
     deliveryFeeNote: string;
   };
 
@@ -87,7 +84,6 @@ export default function OrderFormClient(props: Props) {
     todayDate,
     guttingAvailable,
     deliveryAvailable,
-    tiersLabel,
     defaultValues,
     priceType,
     fixedPriceKhrPerKg,
@@ -95,9 +91,8 @@ export default function OrderFormClient(props: Props) {
     sizePriceTiers,
     guttingPricePerKg,
     betaRate,
-    deliveryMin,
-    deliveryMax,
-    freeDeliveryMinKg,
+    deliveryFeeKhr,
+    distanceKm,
     labels,
     timeBandOptions,
     createOrderAction
@@ -263,9 +258,8 @@ export default function OrderFormClient(props: Props) {
         guttingPricePerKg={guttingPricePerKg}
         betaRate={betaRate}
         deliveryRequested={deliveryRequested && deliveryAvailable}
-        deliveryMin={deliveryMin}
-        deliveryMax={deliveryMax}
-        freeDeliveryMinKg={freeDeliveryMinKg}
+        deliveryFeeKhr={deliveryFeeKhr}
+        distanceKm={distanceKm}
         labels={{
           title: labels.estimateTitle,
           fish: labels.estimateFish,
@@ -273,15 +267,9 @@ export default function OrderFormClient(props: Props) {
           support: labels.estimateSupport,
           delivery: labels.estimateDelivery,
           total: labels.estimateTotal,
-          note: labels.estimateNote,
-          freeDeliveryHint: labels.freeDeliveryHint
+          note: labels.estimateNote
         }}
       />
-
-      {/* 参考として配送レンジの原文も残したいなら、下を出す（不要なら消してOK） */}
-      <div className="muted" style={{marginTop: 8}}>
-        {labels.estimateDelivery}: {tiersLabel}
-      </div>
 
       <button type="submit" disabled={isSubmitting}>{labels.submit}</button>
     </form>

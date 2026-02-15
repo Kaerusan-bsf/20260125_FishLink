@@ -6,8 +6,11 @@ import {refreshOrderExpiration} from '../../../../lib/expiration';
 import {createNotification} from '../../../../lib/notifications';
 import {redirect} from 'next/navigation';
 import {formatMoneyKHR} from '../../../../lib/formatMoneyKHR';
+import {haversineDistanceKm} from '../../../../lib/distance';
 
 export const dynamic = 'force-dynamic';
+const freeRadiusKm = 5;
+const feePerKmKhr = 600;
 
 function show(v?: string | null) {
   return v && v.trim() ? v : null;
@@ -72,7 +75,11 @@ export default async function OrderDetailPage({
 
     const target = await prisma.order.findUnique({
       where: {id: orderId},
-      include: {listing: {include: {deliveryFeeTiers: true}}}
+      include: {
+        listing: {include: {deliveryFeeTiers: true}},
+        restaurant: {include: {profile: true}},
+        farmer: {include: {profile: true}}
+      }
     });
     if (!target || target.farmerId !== current.id) {
       redirect(`/${params.locale}/orders/${params.id}`);
@@ -83,16 +90,18 @@ export default async function OrderDetailPage({
 
     let deliveryFeeFinal = 0;
     if (target.deliveryRequested) {
-      const freeMin = target.listing.freeDeliveryMinKg;
-      if (freeMin && target.quantityKg >= freeMin) {
-        deliveryFeeFinal = 0;
-      } else {
-        const selectedTierFee = Number(formData.get('selectedTierFee'));
-        if (!Number.isFinite(selectedTierFee)) {
-          redirect(`/${params.locale}/orders/${target.id}`);
-        }
-        deliveryFeeFinal = selectedTierFee;
+      const restaurantLat = target.restaurant.profile?.lat;
+      const restaurantLng = target.restaurant.profile?.lng;
+      const farmerLat = target.farmer.profile?.lat;
+      const farmerLng = target.farmer.profile?.lng;
+      if (restaurantLat == null || restaurantLng == null || farmerLat == null || farmerLng == null) {
+        redirect(`/${params.locale}/orders/${target.id}`);
       }
+      const distanceKm = haversineDistanceKm(
+        {lat: restaurantLat, lng: restaurantLng},
+        {lat: farmerLat, lng: farmerLng}
+      );
+      deliveryFeeFinal = distanceKm <= freeRadiusKm ? 0 : Math.ceil(distanceKm) * feePerKmKhr;
     }
 
     const alpha = target.alphaRateSnap ?? 0;
@@ -348,10 +357,6 @@ export default async function OrderDetailPage({
   const canComplete = user.role === 'RESTAURANT' && order.status === 'DELIVERING';
   const showPaymentReview = order.status === 'COMPLETED';
 
-  const sortedTiers = order.listing.deliveryFeeTiers
-    .slice()
-    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-  
   // 農家の受取額（REQUESTED / ACCEPTED 共通で使う）
   const farmerFishSubtotal = order.quantityKg * order.basePricePerKgSnap;
   const farmerGuttingFee = order.guttingRequested
@@ -413,11 +418,6 @@ export default async function OrderDetailPage({
   const totalMaxEst = fishSubtotalEst + guttingFeeEst + supportFeeEst + deliveryMaxEst;
 
   const showRangeEst = order.deliveryRequested && deliveryMinEst !== deliveryMaxEst;
-
-  const freeDeliveryEligible =
-    order.deliveryRequested &&
-    order.listing.freeDeliveryMinKg != null &&
-    order.quantityKg >= order.listing.freeDeliveryMinKg;
 
   const rejectReasonLabel = order.rejectReason
     ? t(`orders.rejectReasons.${order.rejectReason}` as any)
@@ -691,23 +691,9 @@ export default async function OrderDetailPage({
             <form action={acceptOrderAction}>
               <input type="hidden" name="orderId" value={order.id} />
               {order.deliveryRequested ? (
-                freeDeliveryEligible ? (
-                  <p className="notice">{t('orders.freeDeliveryLabel', {minKg: order.listing.freeDeliveryMinKg})}</p>
-                ) : (
-                  <label>
-                    {t('orders.deliveryFeeSelect')}
-                    <select name="selectedTierFee" required>
-                      <option value="" disabled>
-                        --
-                      </option>
-                      {sortedTiers.map((tier) => (
-                        <option key={tier.id} value={tier.fee}>
-                          {tier.label} / {money(tier.fee)}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                )
+                <p className="muted">
+                  {t('orders.deliveryFeeFinalLabel')}: auto-calculated by distance at acceptance.
+                </p>
               ) : (
                 <p className="muted">{t('orders.deliveryFeeFixedZero')}</p>
               )}

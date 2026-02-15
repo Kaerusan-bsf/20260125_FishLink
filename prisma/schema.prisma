@@ -39,6 +39,8 @@ model Profile {
   entityName   String
   phone        String
   googleMapUrl String
+  lat          Float?
+  lng          Float?
   province     String?
   district     String?
   updatedAt    DateTime @updatedAt

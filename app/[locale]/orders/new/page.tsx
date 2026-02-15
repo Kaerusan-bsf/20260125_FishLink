@@ -13,39 +13,26 @@ import {DateTime} from 'luxon';
 import OrderFormClient from './OrderFormClient';
 import {formatMoneyKHR} from '../../../../lib/formatMoneyKHR';
 import {Prisma} from '@prisma/client';
+import {haversineDistanceKm} from '../../../../lib/distance';
 
 export const dynamic = 'force-dynamic';
 
-// deliveryFeeTiers は別テーブル（label/fee/sortOrder）
-function formatTiers(t: (key: string, params?: any) => string, tiers: any) {
-  if (!Array.isArray(tiers) || tiers.length === 0) return '-';
-  return tiers
-    .slice()
-    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-    .map((tier) => {
-      // messages に tierLabelFee が無い場合でも落ちないように
-      try {
-        return t('listings.tierLabelFee', {label: tier.label, fee: formatMoneyKHR(Number(tier.fee))});
-      } catch {
-        return `${tier.label}: ${formatMoneyKHR(Number(tier.fee))}`;
-      }
-    })
-    .join(', ');
-}
+const freeRadiusKm = 5;
+const feePerKmKhr = 600;
 
 export default async function OrderNewPage({
   params,
   searchParams
 }: {
   params: {locale: string};
-  searchParams: {listingId?: string; reorderId?: string; error?: string};
+  searchParams: {listingId?: string; reorderId?: string; error?: 'expired_time' | 'farmer_location_missing'};
 }) {
   const t = await getTranslations();
   const error = searchParams.error;
   const todayDate = DateTime.now().setZone(PHNOM_PENH).toISODate();
 
   // Role enumは使わず string
-  await requireUser(params.locale, 'RESTAURANT');
+  const currentUser = await requireUser(params.locale, 'RESTAURANT');
 
   const listingId = searchParams.listingId;
   if (!listingId) {
@@ -65,9 +52,31 @@ export default async function OrderNewPage({
     redirect(`/${params.locale}/listings`);
   }
 
+  const restaurant = await prisma.user.findUnique({
+    where: {id: currentUser.id},
+    include: {profile: true}
+  });
+  if (!restaurant?.profile) {
+    redirect(`/${params.locale}/profile`);
+  }
+
+  if (restaurant.profile.lat == null || restaurant.profile.lng == null) {
+    redirect(`/${params.locale}/profile`);
+  }
+
   const reorder = searchParams.reorderId
     ? await prisma.order.findUnique({where: {id: searchParams.reorderId}})
     : null;
+
+  const farmerLat = listing.farmer.profile?.lat;
+  const farmerLng = listing.farmer.profile?.lng;
+  const restaurantLat = restaurant.profile.lat;
+  const restaurantLng = restaurant.profile.lng;
+  const farmerLocationMissing = farmerLat == null || farmerLng == null;
+  const distanceKm = farmerLocationMissing
+    ? null
+    : haversineDistanceKm({lat: restaurantLat, lng: restaurantLng}, {lat: farmerLat, lng: farmerLng});
+  const deliveryFeeKhr = distanceKm == null || distanceKm <= freeRadiusKm ? 0 : Math.ceil(distanceKm) * feePerKmKhr;
 
   async function createOrder(formData: FormData) {
     'use server';
@@ -109,6 +118,12 @@ export default async function OrderNewPage({
     });
     if (!restaurant?.profile) {
       redirect(`/${params.locale}/profile`);
+    }
+    if (restaurant.profile.lat == null || restaurant.profile.lng == null) {
+      redirect(`/${params.locale}/profile`);
+    }
+    if (listingForOrder.farmer.profile?.lat == null || listingForOrder.farmer.profile?.lng == null) {
+      redirect(`/${params.locale}/orders/new?listingId=${listingForOrder.id}&error=farmer_location_missing`);
     }
 
     const pricing = await prisma.pricingConfig.findFirst({
@@ -252,17 +267,8 @@ export default async function OrderNewPage({
       where: {isActive: true},
       orderBy: {updatedAt: 'desc'}
     });
-    const alphaUi = pricingForUi?.alphaRate ?? 0;
-    const betaUi = pricingForUi?.betaRate ?? 0;
-  
-    // 配送費レンジ（tier fee の min / max）
-    const feeNums = (listing.deliveryFeeTiers ?? [])
-      .map((tier) => Number(tier.fee))
-      .filter((n) => Number.isFinite(n));
-    const deliveryMin = feeNums.length ? Math.min(...feeNums) : 0;
-    const deliveryMax = feeNums.length ? Math.max(...feeNums) : 0;
-
-  const tiersLabel = formatTiers(t, listing.deliveryFeeTiers);
+  const alphaUi = pricingForUi?.alphaRate ?? 0;
+  const betaUi = pricingForUi?.betaRate ?? 0;
 
   return (
     <main>
@@ -272,6 +278,11 @@ export default async function OrderNewPage({
       {error === 'expired_time' ? (
         <p className="notice" style={{background: '#fee2e2', color: '#991b1b'}}>
           {t('orders.expiredTimeError')}
+        </p>
+      ) : null}
+      {error === 'farmer_location_missing' ? (
+        <p className="notice" style={{background: '#fee2e2', color: '#991b1b'}}>
+          Farmer location is not set yet. Ordering is temporarily unavailable for this listing.
         </p>
       ) : null}
       <div className="card">
@@ -315,74 +326,79 @@ export default async function OrderNewPage({
     </a>
   </p>
 ) : null}
+        {distanceKm != null ? (
+          <p className="muted" style={{marginTop: 4}}>
+            Distance: {distanceKm.toFixed(2)} km / Auto delivery fee: {formatMoneyKHR(deliveryFeeKhr)}
+          </p>
+        ) : (
+          <p className="notice" style={{marginTop: 8, background: '#fee2e2', color: '#991b1b'}}>
+            Farmer location is not set yet. Ordering is temporarily unavailable for this listing.
+          </p>
+        )}
 
-        <OrderFormClient
-          locale={params.locale}
-          listingId={listing.id}
-          todayDate={todayDate}
-          tiersLabel={tiersLabel}
-          guttingAvailable={listing.guttingAvailable}
-          deliveryAvailable={listing.deliveryAvailable}
-          priceType={listing.priceType === 'TIERED' ? 'TIERED' : 'FIXED'}
-          fixedPriceKhrPerKg={listing.fixedPriceKhrPerKg ?? Math.round(listing.basePricePerKg)}
-          alphaRate={alphaUi}
-          sizePriceTiers={listing.sizePriceTiers.map((tier) => ({
-            sortOrder: tier.sortOrder,
-            minHeadPerKg: tier.minHeadPerKg,
-            maxHeadPerKg: tier.maxHeadPerKg,
-            priceKhrPerKg: tier.priceKhrPerKg
-          }))}
-          defaultValues={{
-            quantityKg: reorder?.quantityKg != null ? String(reorder.quantityKg) : '',
-            sizeRequestText: reorder?.sizeRequestText ?? '',
-            timeBand: reorder?.timeBand ?? '',
-            timeDetail: reorder?.timeDetail ?? '',
-            memo: reorder?.memo ?? '',
-            guttingRequested: Boolean(reorder?.guttingRequested ?? false),
-            deliveryRequested: Boolean(reorder?.deliveryRequested ?? false)
-          }}
-          guttingPricePerKg={listing.guttingPricePerKg}
-          betaRate={betaUi}
-          deliveryMin={deliveryMin}
-          deliveryMax={deliveryMax}
-          freeDeliveryMinKg={listing.freeDeliveryMinKg ?? null}
-          labels={{
-            quantityKg: t('orders.quantityKg'),
-            sizeRequestText: t('orders.sizeRequestText'),
-            requestedDateLabel: t('orders.requestedDateLabel'),
-            today: t('orders.today'),
-            tomorrow: t('orders.tomorrow'),
-            dayAfterTomorrow: t('orders.dayAfterTomorrow'),
-            pickDate: t('orders.pickDate'),
-            orPickFromCalendar: t('orders.orPickFromCalendar'),
-            timeBand: t('orders.timeBand'),
-            timeDetail: t('orders.timeDetail'),
-            memo: t('orders.memo'),
-            guttingRequested: t('orders.guttingRequested'),
-            deliveryRequested: t('orders.deliveryRequested'),
-            sizeTierLabel: t('orders.sizeRequestText'),
-            submit: t('orders.submit'),
+        {distanceKm != null ? (
+          <OrderFormClient
+            locale={params.locale}
+            listingId={listing.id}
+            todayDate={todayDate}
+            guttingAvailable={listing.guttingAvailable}
+            deliveryAvailable={listing.deliveryAvailable}
+            priceType={listing.priceType === 'TIERED' ? 'TIERED' : 'FIXED'}
+            fixedPriceKhrPerKg={listing.fixedPriceKhrPerKg ?? Math.round(listing.basePricePerKg)}
+            alphaRate={alphaUi}
+            sizePriceTiers={listing.sizePriceTiers.map((tier) => ({
+              sortOrder: tier.sortOrder,
+              minHeadPerKg: tier.minHeadPerKg,
+              maxHeadPerKg: tier.maxHeadPerKg,
+              priceKhrPerKg: tier.priceKhrPerKg
+            }))}
+            defaultValues={{
+              quantityKg: reorder?.quantityKg != null ? String(reorder.quantityKg) : '',
+              sizeRequestText: reorder?.sizeRequestText ?? '',
+              timeBand: reorder?.timeBand ?? '',
+              timeDetail: reorder?.timeDetail ?? '',
+              memo: reorder?.memo ?? '',
+              guttingRequested: Boolean(reorder?.guttingRequested ?? false),
+              deliveryRequested: Boolean(reorder?.deliveryRequested ?? false)
+            }}
+            guttingPricePerKg={listing.guttingPricePerKg}
+            betaRate={betaUi}
+            deliveryFeeKhr={deliveryFeeKhr}
+            distanceKm={distanceKm}
+            labels={{
+              quantityKg: t('orders.quantityKg'),
+              sizeRequestText: t('orders.sizeRequestText'),
+              requestedDateLabel: t('orders.requestedDateLabel'),
+              today: t('orders.today'),
+              tomorrow: t('orders.tomorrow'),
+              dayAfterTomorrow: t('orders.dayAfterTomorrow'),
+              pickDate: t('orders.pickDate'),
+              orPickFromCalendar: t('orders.orPickFromCalendar'),
+              timeBand: t('orders.timeBand'),
+              timeDetail: t('orders.timeDetail'),
+              memo: t('orders.memo'),
+              guttingRequested: t('orders.guttingRequested'),
+              deliveryRequested: t('orders.deliveryRequested'),
+              sizeTierLabel: t('orders.sizeRequestText'),
+              submit: t('orders.submit'),
 
-            // ↓ 概算UI（B：内訳＋合計レンジ）
-            estimateTitle: t('orders.estimate'),
-
-            // ここは「テキストラベル」だけ欲しいので直書きでもOK（β）
-            estimateFish: t('orders.estimateFishLabel'),
-            estimateGutting: t('orders.estimateGuttingLabel'),
-            estimateSupport: t('orders.estimateSupportLabel'),
-            estimateDelivery: t('orders.estimateDeliveryLabel'),
-            estimateTotal: t('orders.estimateTotalLabel'),
-            estimateNote: t('orders.estimateNote'),
-            freeDeliveryHint: t('orders.freeDeliveryHint'),
-            deliveryFeeNote: t('orders.deliveryFeeNote')
-          }}
-          timeBandOptions={{
-            morning: t('timeBand.morning'),
-            afternoon: t('timeBand.afternoon'),
-            night: t('timeBand.night')
-          }}
-          createOrderAction={createOrder}
-        />
+              estimateTitle: t('orders.estimate'),
+              estimateFish: t('orders.estimateFishLabel'),
+              estimateGutting: t('orders.estimateGuttingLabel'),
+              estimateSupport: t('orders.estimateSupportLabel'),
+              estimateDelivery: t('orders.estimateDeliveryLabel'),
+              estimateTotal: t('orders.estimateTotalLabel'),
+              estimateNote: t('orders.estimateNote'),
+              deliveryFeeNote: t('orders.deliveryFeeNote')
+            }}
+            timeBandOptions={{
+              morning: t('timeBand.morning'),
+              afternoon: t('timeBand.afternoon'),
+              night: t('timeBand.night')
+            }}
+            createOrderAction={createOrder}
+          />
+        ) : null}
       </div>
     </main>
   );

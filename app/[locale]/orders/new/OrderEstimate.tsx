@@ -10,9 +10,8 @@ type Props = {
   guttingPricePerKg: number;
   betaRate: number;
   deliveryRequested: boolean;
-  deliveryMin: number;
-  deliveryMax: number;
-  freeDeliveryMinKg: number | null;
+  deliveryFeeKhr: number;
+  distanceKm: number;
   labels: {
     title: string;
     fish: string;
@@ -21,7 +20,6 @@ type Props = {
     delivery: string;
     total: string;
     note: string;
-    freeDeliveryHint: string; // "{minKg}" を含む
   };
 };
 
@@ -37,9 +35,8 @@ export default function OrderEstimate(props: Props) {
     guttingPricePerKg,
     betaRate,
     deliveryRequested,
-    deliveryMin,
-    deliveryMax,
-    freeDeliveryMinKg,
+    deliveryFeeKhr,
+    distanceKm,
     labels
   } = props;
 
@@ -52,25 +49,10 @@ export default function OrderEstimate(props: Props) {
     // βは魚代小計に対して
     const supportFee = fishSubtotal * betaRate;
 
-    // 配送費：配送希望ONのときだけレンジ（送料無料条件も考慮）
-    let dMin = 0;
-    let dMax = 0;
+    const deliveryFee = deliveryRequested ? deliveryFeeKhr : 0;
+    const total = fishSubtotal + guttingFee + supportFee + deliveryFee;
 
-    if (deliveryRequested) {
-      const eligibleFree = freeDeliveryMinKg != null && qty >= freeDeliveryMinKg;
-      if (eligibleFree) {
-        dMin = 0;
-        dMax = 0;
-      } else {
-        dMin = deliveryMin;
-        dMax = deliveryMax;
-      }
-    }
-
-    const totalMin = fishSubtotal + guttingFee + supportFee + dMin;
-    const totalMax = fishSubtotal + guttingFee + supportFee + dMax;
-
-    return {fishSubtotal, guttingFee, supportFee, dMin, dMax, totalMin, totalMax};
+    return {fishSubtotal, guttingFee, supportFee, deliveryFee, total};
   }, [
     quantityKg,
     displayUnitPricePerKg,
@@ -78,16 +60,13 @@ export default function OrderEstimate(props: Props) {
     guttingPricePerKg,
     betaRate,
     deliveryRequested,
-    deliveryMin,
-    deliveryMax,
-    freeDeliveryMinKg
+    deliveryFeeKhr
   ]);
-
-  const showRange = deliveryRequested && calc.dMin !== calc.dMax;
 
   return (
     <div className="notice">
       <strong>{labels.title}</strong>
+      <div className="muted">Distance: {distanceKm.toFixed(2)} km</div>
 
       <div className="muted">
         {labels.fish}: {money(calc.fishSubtotal)}
@@ -104,28 +83,12 @@ export default function OrderEstimate(props: Props) {
       </div>
 
       <div className="muted">
-        {labels.delivery}:{' '}
-        {deliveryRequested ? (
-          freeDeliveryMinKg != null && quantityKg >= freeDeliveryMinKg ? (
-            <>
-              {money(0)}{' '}
-              <span className="muted">
-                ({labels.freeDeliveryHint.replace('{minKg}', String(freeDeliveryMinKg))})
-              </span>
-            </>
-          ) : showRange ? (
-            `${money(calc.dMin)} - ${money(calc.dMax)}`
-          ) : (
-            money(calc.dMin)
-          )
-        ) : (
-          money(0)
-        )}
+        {labels.delivery}: {deliveryRequested ? money(calc.deliveryFee) : money(0)}
       </div>
 
       <div style={{marginTop: 8}}>
         <strong>
-          {labels.total}: {showRange ? `${money(calc.totalMin)} - ${money(calc.totalMax)}` : money(calc.totalMin)}
+          {labels.total}: {money(calc.total)}
         </strong>
       </div>
 
