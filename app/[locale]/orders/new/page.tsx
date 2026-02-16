@@ -19,6 +19,16 @@ export const dynamic = 'force-dynamic';
 
 const freeRadiusKm = 5;
 const feePerKmKhr = 600;
+const mapLinkStyle = {
+  display: 'inline-block',
+  marginTop: 4,
+  padding: '6px 10px',
+  border: '1px solid var(--border)',
+  borderRadius: 8,
+  background: '#f8fafc',
+  textDecoration: 'none',
+  fontWeight: 600
+};
 
 export default async function OrderNewPage({
   params,
@@ -321,9 +331,11 @@ export default async function OrderNewPage({
 
 {listing.farmer.profile?.googleMapUrl ? (
   <p style={{marginTop: 4}}>
-    <a href={listing.farmer.profile.googleMapUrl} target="_blank" rel="noreferrer">
-      {t('orders.viewFarmerMap')}
+    <a href={listing.farmer.profile.googleMapUrl} target="_blank" rel="noopener noreferrer" style={mapLinkStyle}>
+      {t('orders.openGoogleMaps')}
     </a>
+    <br />
+    <small className="muted">{t('orders.openGoogleMapsHint')}</small>
   </p>
 ) : null}
         {distanceKm != null ? (

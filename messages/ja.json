@@ -134,6 +134,8 @@
     "handoffMap": "受け渡し地点Map",
     "phoneCall": "電話する",
     "mapOpen": "開く",
+    "openGoogleMaps": "🗺 Google Mapsで開く ↗",
+    "openGoogleMapsHint": "別タブで開きます（戻ると注文画面に戻れます）",
     "notSet": "未設定",
     "statusPreparing": "準備中",
     "statusDelivering": "配送中",

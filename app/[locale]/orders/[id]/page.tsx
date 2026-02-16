@@ -11,6 +11,15 @@ import {haversineDistanceKm} from '../../../../lib/distance';
 export const dynamic = 'force-dynamic';
 const freeRadiusKm = 5;
 const feePerKmKhr = 600;
+const mapLinkStyle = {
+  display: 'inline-block',
+  padding: '6px 10px',
+  border: '1px solid var(--border)',
+  borderRadius: 8,
+  background: '#f8fafc',
+  textDecoration: 'none',
+  fontWeight: 600
+};
 
 function show(v?: string | null) {
   return v && v.trim() ? v : null;
@@ -647,8 +656,8 @@ export default async function OrderDetailPage({
         <p>
           {t('orders.restaurantMap')}:&nbsp;
           {restaurantMap ? (
-            <a href={restaurantMap} target="_blank" rel="noreferrer">
-              {t('orders.mapOpen')}
+            <a href={restaurantMap} target="_blank" rel="noopener noreferrer" style={mapLinkStyle}>
+              {t('orders.openGoogleMaps')}
             </a>
           ) : (
             t('orders.notSet')
@@ -658,8 +667,8 @@ export default async function OrderDetailPage({
         <p>
           {t('orders.farmerMap')}:&nbsp;
           {farmerMap ? (
-            <a href={farmerMap} target="_blank" rel="noreferrer">
-              {t('orders.mapOpen')}
+            <a href={farmerMap} target="_blank" rel="noopener noreferrer" style={mapLinkStyle}>
+              {t('orders.openGoogleMaps')}
             </a>
           ) : (
             t('orders.notSet')
@@ -669,8 +678,8 @@ export default async function OrderDetailPage({
         <p>
           {t('orders.handoffMap')}:&nbsp;
           {handoffMap ? (
-            <a href={handoffMap} target="_blank" rel="noreferrer">
-              {t('orders.mapOpen')}
+            <a href={handoffMap} target="_blank" rel="noopener noreferrer" style={mapLinkStyle}>
+              {t('orders.openGoogleMaps')}
             </a>
           ) : (
             t('orders.notSet')

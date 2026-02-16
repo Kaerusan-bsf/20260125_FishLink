@@ -134,6 +134,8 @@
     "handoffMap": "ផែនទីប្រគល់",
     "phoneCall": "ហៅទូរស័ព្ទ",
     "mapOpen": "បើក",
+    "openGoogleMaps": "🗺 បើកក្នុង Google Maps ↗",
+    "openGoogleMapsHint": "នឹងបើកក្នុងផ្ទាំងថ្មី (អ្នកអាចត្រឡប់មកទំព័របញ្ជាទិញវិញបាន)",
     "notSet": "មិនបានកំណត់",
     "statusPreparing": "កំពុងរៀបចំ",
     "statusDelivering": "កំពុងដឹកជញ្ជូន",

@@ -134,6 +134,8 @@
     "handoffMap": "Handoff map",
     "phoneCall": "Call",
     "mapOpen": "Open",
+    "openGoogleMaps": "🗺 Open in Google Maps ↗",
+    "openGoogleMapsHint": "Opens in a new tab (you can return to the order page).",
     "notSet": "Not set",
     "statusPreparing": "Preparing",
     "statusDelivering": "Delivering",
